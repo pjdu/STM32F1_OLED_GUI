@@ -51,6 +51,8 @@
 
 #define SPI_CS_Pin GPIO_PIN_12
 #define SPI_CS_GPIO_Port GPIOB
+#define OLED_RST_Pin GPIO_PIN_14
+#define OLED_RST_GPIO_Port GPIOB
 #define OLED_DC_Pin GPIO_PIN_6
 #define OLED_DC_GPIO_Port GPIOC
 #define LED0_Pin GPIO_PIN_8

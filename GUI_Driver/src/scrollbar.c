@@ -89,8 +89,8 @@ void GUI_ScrollbarDelete(Scrollbar_Typedef *scbx)
 
 Scrollbar_Typedef Scrollbar=
 {
-246,
-14,
+245,
+13,
 10,
 50,
 	

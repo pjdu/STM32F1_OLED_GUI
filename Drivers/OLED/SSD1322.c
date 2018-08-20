@@ -199,14 +199,15 @@ static void Set_Gray_Scale_Table()
 	Write_Command(0x00);			// Enable Gray Scale Table
 }
 
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//   區塊資料填充
-//    a: Column Address of Start
-//    b: Column Address of End (Total Columns Devided by 4)
-//    c: Row Address of Start
-//    d: Row Address of End
-//	  Data: 0x00(滅) 0xff(亮)
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   OLED區塊記憶體填充(不包含更新螢幕)
+//   a: Column Address of Start
+//   b: Column Address of End (Total Columns Devided by 4)
+//   c: Row Address of Start
+//   d: Row Address of End
+//	 Data: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 void OLED_FillBlock(unsigned char a, unsigned char b,unsigned char c, unsigned char d,unsigned char Data){
 	for(int y=c;y<d;y++)
 	{
@@ -217,9 +218,10 @@ void OLED_FillBlock(unsigned char a, unsigned char b,unsigned char c, unsigned c
 	}
 }
 
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//  Show Regular Pattern (Full Screen)
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//  OLED記憶體填充(不包含更新螢幕)
+//  Data : 0X00(滅) or 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void OLED_FillRam(unsigned char Data) {
 	OLED_FillBlock(0x00, Max_Column, 0x00, Max_Row,Data);
 }
@@ -227,7 +229,14 @@ void OLED_FillRam(unsigned char Data) {
 void OLED_Clear()
 {
 	OLED_FillRam(0x00);
+	OLED_RefreshGram();
 }
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   向OLED記憶體寫入1個pixel (不包含更新螢幕)
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//	 mode: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t mode) {
 
 	if (x > 255 || y > 63)
@@ -245,6 +254,12 @@ void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t mode) {
 	}
 
 }
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   向OLED記憶體讀取1個pixel
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//	 mode: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 uint8_t OLED_ReadPoint(uint8_t x, uint8_t y) {
 
 	if (x > 255 || y > 63)
@@ -271,7 +286,15 @@ void OLED_RefreshGram() {
 		}
 	}
 }
-
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   從字表找出一個字元寫入OLED記憶體
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//   chr: 字元
+//   f_w:字元寬度像素
+//   f_h:字元高度像素
+//	 mode: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t f_w, uint8_t f_h,uint8_t mode){
 	uint8_t temp,t,t1;
 	uint8_t y0=y;
@@ -307,19 +330,23 @@ void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t f_w, uint8_t f_h,u
 	}
 }
 
-//显示图片
-//x,y:起点坐标
-//p_w:图片宽（单位像素）
-//p_h:图片高（单位像素）
-//*p:图片起始地址
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   向OLED記憶體放入一張圖片
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//  *p: 圖片記憶體首地址
+//   p_w:圖片寬度像素
+//   p_w:圖片高度像素
+//	 mode: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void OLED_ShowPicture(uint8_t x,uint8_t y,const uint8_t *p,uint8_t p_w,uint8_t p_h)
 {
 	uint8_t temp,i,col,row;
 	uint8_t y0=y;
 	uint8_t width=p_w;
-	if(x+p_w>128)width=128-p_w;//实际显示宽度
+	if(x+p_w>OLED_PIXEL_WIDTH)width=OLED_PIXEL_WIDTH-p_w;//实际显示宽度
 	uint8_t high=p_h;
-	if(y+p_h>64)high=64-p_h;//实际显示高度
+	if(y+p_h>OLED_PIXEL_HEIGHT)high=OLED_PIXEL_HEIGHT-p_h;//实际显示高度
 	uint8_t exp_col_bytes=(p_h/8+((p_h%8)?1:0));//显示一列的字节数
 	uint8_t act_col_bytes=(high/8+((high%8)?1:0));//实际显示一列的字节数
 
@@ -345,19 +372,16 @@ void OLED_ShowPicture(uint8_t x,uint8_t y,const uint8_t *p,uint8_t p_w,uint8_t p
 	}
 }
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//  Initialization
+//  OLED Initialization
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 void OLED_Init() {
 	uint8_t dummy = 0x0;
 
+
 	//LCD_RST_SetLow();
-
-//	for(i=0;i<200;i++)
-//	{
-//		HAL_Delay(1);
-//	}
-
-	//LCD_RST_SetHigh();
+	HAL_GPIO_WritePin(OLED_RST_GPIO_Port,OLED_RST_Pin,RESET);
+	HAL_Delay(500);
+	HAL_GPIO_WritePin(OLED_RST_GPIO_Port,OLED_RST_Pin,SET);
 	HAL_SPI_Transmit(&hspi2, &dummy, 1, 1000);
 
 	Set_Command_Lock(0x12);			// Unlock Basic Commands (0x12/0x16)

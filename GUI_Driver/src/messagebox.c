@@ -116,14 +116,14 @@ uint8_t GUI_MessageBoxDelete(MessageBox_Typedef* messagebox)
 }
 
 MessageBox_Typedef MessageBox={
-0,
-0,
-256,
-64,
-"reset",
-"system will be resetni hao a1234?",
-"OK",
-"Cancel"
+	0,
+	0,
+	256,
+	64,
+	"reset",
+	"system will be resetni hao a1234?",
+	"OK",
+	"Cancel"
 };
 
 

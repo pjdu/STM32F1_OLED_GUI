@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "SSD1322.h"
 
 #ifndef TRUE
 	#define TRUE  1
@@ -31,8 +32,8 @@ extern uint8_t const  DCB2HEX_TAB[8];
 #define  TCOLOR	  uint8_t 					//自行修改，原來是	uint8_t_t
 
 /* 定義LCM像素數宏 */
-#define  GUI_LCM_XMAX		256				/* 定義液晶x軸的像素數 */
-#define  GUI_LCM_YMAX		64				/* 定義液晶y軸的像素數 */
+#define  GUI_LCM_XMAX	OLED_PIXEL_WIDTH     /* 定義液晶x軸的像素數 */
+#define  GUI_LCM_YMAX	OLED_PIXEL_HEIGHT	/* 定義液晶y軸的像素數 */
 
 /* 定義前景色及背景色變量，用於ASCII碼、漢字、窗口、單色位圖顯示 */
 extern TCOLOR	disp_color;
@@ -87,40 +88,6 @@ extern TCOLOR	back_color;
 /* 下拉菜單 */
 #define  GUI_MenuDown_EN		0
 
-
-
-/* 5*7字體 */
-#define  FONT5x7_EN				0
-
-/* 6*12字體*/
-#define  FONT6x12_EN     		0
-
-/* 8*8字體 */
-#define  FONT8x8_EN				0
-
-/* 8*16字體 */
-#define  FONT8x16_EN			0
-
-/* 12*12字體*/
-#define  FONT12x12_EN    		0
-
-/* 12*24字體*/
-#define  FONT12x24_EN     		0
-
-/* 16*32字體 */
-#define  FONT16x32_EN			0
-
-/* 14*56字體*/
-#define  FONT14x40_EN     		0
-
-/* 24*32字體 */
-#define  FONT24x24_EN			0
-
-/* 24*48字體 */
-#define  FONT24x48_EN			0
-
-/* 24*54字體*/
-#define  FONT24x54_EN     		0
 
 /* 漢字顯示函數 */
 #define  GUI_PutHZ_EN			0
