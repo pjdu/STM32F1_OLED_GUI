@@ -41,7 +41,9 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "menu_ui.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -51,6 +53,23 @@ TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+/*START_TASK==========================================*/
+#define START_TASK_PRIORITY   				1  		// Task Priority
+#define START_TASK_STACK_SIZE 				128		// Task Stack Size
+TaskHandle_t StartTaskHandler;						// Task Handler
+void START_task(void *pvParameters);				// Task Fuction
+
+/*Menu_Task==========================================*/
+#define MENU_TASK_PRIORITY   				2  		// Task Priority
+#define MENU_TASK_STACK_SIZE 				128		// Task Stack Size
+TaskHandle_t MenuTaskHandler;						// Task Handler
+extern void Menu_Task(void *pvParameters);			// Task Fuction
+
+/*GPIO_TASK==========================================*/
+#define GPIO_TASK_PRIORITY   				3  		// Task Priority
+#define GPIO_TASK_STACK_SIZE 				70		// Task Stack Size
+TaskHandle_t GPIOTaskHandler;						// Task Handler
+void GPIO_task(void *pvParameters);					// Task Fuction
 
 /* USER CODE END PV */
 
@@ -112,25 +131,20 @@ int main(void)
 //	HAL_Delay(1000);
 //	GUI_ClearSCR();
 	mainMenuInit();
-//	RotaryEcncorder_SetRange(0,10);
+
+	xTaskCreate((TaskFunction_t  )(START_task),         	//Task Function
+				(const char*     ) "START_task",		    //Task Name
+				(uint16_t        ) START_TASK_STACK_SIZE,  //Task Stack Size
+				(void *          ) NULL,				   //Task Fuction Parameter
+				(UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
+				(TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
+
+	vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
-//		int32_t test = RotaryEcncorder_GetCount();
-//
-//		OLED_ShowNum(20,20,test,5,6,12);
-//
-//		char a[10];
-//		sprintf(a,"%d",test);
-//		OLED_ShowString(70,50,a,6,12);
-//		OLED_RefreshGram();
-//		HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-//		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-		Menu_Run();
-		HAL_Delay(30);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -325,6 +339,36 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+void START_task(void *pvParameters){
+	taskENTER_CRITICAL();
+
+	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
+				(const char*     ) "Menu_Task",		      	//Task Name
+				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+
+	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
+				(const char*     ) "GPIO_task",		      	//Task Name
+				(uint16_t        ) GPIO_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
+
+	vTaskDelete(StartTaskHandler);
+	taskEXIT_CRITICAL();
+}
+void GPIO_task(void *pvParameters){
+
+	while(1){
+		HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
+		vTaskDelay(1000/portTICK_PERIOD_MS);
+		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+		vTaskDelay(2000/portTICK_PERIOD_MS);
+	}
+
+}
 /* USER CODE END 4 */
 
 /**

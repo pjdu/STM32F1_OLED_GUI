@@ -5,11 +5,13 @@
 #include "gui_menu.h"
 #include "windows.h"
 #include "scrollbar.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
  * ALIENTEK MiniFly_Remotor
- * 菜單顯示界面代碼	
+ * 菜單顯示界面代碼
  * 正點原子@ALIENTEK
  * 技術論壇:www.openedv.com
  * 創建日期:2018/6/1
@@ -23,7 +25,7 @@ extern WINDOWS MenuWindow;
 extern Scrollbar_Typedef MenuScrollbar;
 
 void menu_test(void);
-void Menu_Run(void);//運行菜單
+void Menu_Task(void *pvParameters);//運行菜單
 void MenuHookFun(uint8_t key);//鉤子函數
 void exitMenu(void);
 void gotoNextMenu(void);
