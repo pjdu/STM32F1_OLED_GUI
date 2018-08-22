@@ -49,6 +49,12 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define ROTARY_SW_Pin GPIO_PIN_3
+#define ROTARY_SW_GPIO_Port GPIOC
+#define ROTARY_A_Pin GPIO_PIN_0
+#define ROTARY_A_GPIO_Port GPIOA
+#define ROTARY_B_Pin GPIO_PIN_1
+#define ROTARY_B_GPIO_Port GPIOA
 #define SPI_CS_Pin GPIO_PIN_12
 #define SPI_CS_GPIO_Port GPIOB
 #define OLED_RST_Pin GPIO_PIN_14

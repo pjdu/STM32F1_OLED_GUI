@@ -330,13 +330,72 @@ void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t f_w, uint8_t f_h,u
 	}
 }
 
+//m^n函数
+static uint32_t mypow(uint8_t m,uint8_t n)
+{
+	uint32_t result=1;
+	while(n--)result*=m;
+	return result;
+}
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   向OLED記憶體放入數字字串，OLED顯示數字，不支援負數顯示
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//   len:數字的位數，如1000,len=4
+//   f_w:字寬度像素
+//   f_h:字高度像素
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void OLED_ShowNum(uint8_t x,uint8_t y,uint32_t num,uint8_t len,uint8_t f_w,uint8_t f_h)
+{
+	uint8_t t,temp;
+	uint8_t enshow=0;
+	for(t=0;t<len;t++)
+	{
+		temp=(num/mypow(10,len-t-1))%10;
+		if(enshow==0&&t<(len-1))
+		{
+			if(temp==0)
+			{
+				OLED_ShowChar(x+(f_w)*t,y,' ',f_w,f_h,1);
+				continue;
+			}
+			else
+				enshow=1;
+		}
+		OLED_ShowChar(x+(f_w)*t,y,temp+'0',f_w,f_h,1);
+	}
+}
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//   向OLED記憶體放入字串，OLED顯示字串
+//   x: OLED螢幕x座標
+//   y: OLED螢幕y座標
+//  *p: 字元陣列首地址
+//   f_w:字寬度像素
+//   f_h:字高度像素
+//	 mode: 0x00(滅) 0x01(亮)
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void OLED_ShowString(uint8_t x,uint8_t y,const uint8_t *p,uint8_t f_w,uint8_t f_h)
+{
+    while((*p<='~')&&(*p>=' '))//判断是不是非法字符!
+    {
+        if(x>(OLED_PIXEL_WIDTH-(f_w))){x=0;y+=f_h;}
+        if(y>(OLED_PIXEL_HEIGHT-f_h)){y=x=0;OLED_Clear();}
+        OLED_ShowChar(x,y,*p,f_w,f_h,1);
+        x+=f_w;
+        p++;
+    }
+
+}
+
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //   向OLED記憶體放入一張圖片
 //   x: OLED螢幕x座標
 //   y: OLED螢幕y座標
 //  *p: 圖片記憶體首地址
 //   p_w:圖片寬度像素
-//   p_w:圖片高度像素
+//   p_h:圖片高度像素
 //	 mode: 0x00(滅) 0x01(亮)
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void OLED_ShowPicture(uint8_t x,uint8_t y,const uint8_t *p,uint8_t p_w,uint8_t p_h)

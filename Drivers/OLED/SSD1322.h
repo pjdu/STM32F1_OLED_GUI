@@ -36,6 +36,8 @@ void OLED_Init();
 void OLED_DrawPoint(uint8_t x, uint8_t y,uint8_t mode);
 uint8_t OLED_ReadPoint(uint8_t x, uint8_t y);
 void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t f_w, uint8_t f_h,uint8_t mode);
+void OLED_ShowNum(uint8_t x,uint8_t y,uint32_t num,uint8_t len,uint8_t f_w,uint8_t f_h);
+void OLED_ShowString(uint8_t x,uint8_t y,const uint8_t *p,uint8_t f_w,uint8_t f_h);
 void OLED_ShowPicture(uint8_t x,uint8_t y,const uint8_t *p,uint8_t p_w,uint8_t p_h);
 void OLED_RefreshGram();
 

@@ -3,7 +3,7 @@
 
 #define Font_06_08_EN 1
 #define Font_06_12_EN 1
-#define Font_12_24_EN 1
+#define Font_12_24_EN 0
 
 
 #if Font_06_08_EN==1
