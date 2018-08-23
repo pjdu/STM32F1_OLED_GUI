@@ -153,6 +153,7 @@ void Menu_Task(void *pvParameters) {
 				case state_no_changed:
 					break;
 				case state_counter_clock_wise:
+				case state_clock_wise:
 					//清除窗口內容
 					GUI_RectangleFill(MenuWindow.x+1,MenuScrollbar.y,MenuScrollbar.x-1,MenuWindow.height-2,0);
 					Menu_SetSelected(cur_sequence,false);
@@ -160,18 +161,12 @@ void Menu_Task(void *pvParameters) {
 					cur_sequence = cur_rotateNum;
 					Menu_SetSelected(cur_sequence,true);
 					//光標位置--
-					CurMenu->cursorPosition--;
+					CurMenu->cursorPosition = cur_sequence;
 					if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
 						showItems = CurMenu->menuItemCount;
-						if (CurMenu->cursorPosition < 0)
-							CurMenu->cursorPosition = 0;
 					} else {
 						showItems = MenuWindow.itemsperpage;
-						if (CurMenu->cursorPosition < 0) {
-							CurMenu->cursorPosition = 0;
-							if (MenuWindow.topitem > 0)
-								MenuWindow.topitem--;
-						}
+						MenuWindow.topitem = cur_sequence;
 					}
 					for (int i = 0; i < showItems; i++) {
 						MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
@@ -181,33 +176,6 @@ void Menu_Task(void *pvParameters) {
 					GUI_Scrollbar_SetPos(&MenuScrollbar);
 					GUI_Refresh();
 					break;
-				case state_clock_wise:
-					GUI_RectangleFill(MenuWindow.x+1,MenuScrollbar.y,MenuScrollbar.x-1,MenuWindow.height-2,0);
-					Menu_SetSelected(cur_sequence,false);
-					cur_sequence = cur_rotateNum;
-					Menu_SetSelected(cur_sequence,true);
-					//光標位置++
-					CurMenu->cursorPosition++;
-					if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
-						showItems = CurMenu->menuItemCount;
-						if (CurMenu->cursorPosition >= CurMenu->menuItemCount)
-							CurMenu->cursorPosition = CurMenu->menuItemCount - 1;
-					} else {
-						showItems = MenuWindow.itemsperpage;
-						if (CurMenu->cursorPosition > MenuWindow.itemsperpage - 1) {
-							CurMenu->cursorPosition = MenuWindow.itemsperpage - 1;
-							if (MenuWindow.topitem < CurMenu->menuItemCount - MenuWindow.itemsperpage)
-								MenuWindow.topitem++;
-						}
-					}
-					for (int i = 0; i < showItems; i++) {
-						MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
-						GUI_MenuItemDraw(MEMU_POSX_1, MEMU_POSY_1 + i * 15, Item);
-					}
-					MenuScrollbar.topitem = cur_sequence;
-					GUI_Scrollbar_SetPos(&MenuScrollbar);
-					GUI_Refresh();
-				break;
 			}
 			vTaskDelay(100/portTICK_PERIOD_MS);
 	}

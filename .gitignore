@@ -34,5 +34,7 @@
 
 #Atolic xml files
 language.settings.xml
-
+#asm
+*.list
+*.map
 

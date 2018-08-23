@@ -44,6 +44,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "menu_ui.h"
+#include "rotary_encorder.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -67,11 +68,20 @@ void START_task(void *pvParameters);				// Task Fuction
 TaskHandle_t MenuTaskHandler;						// Task Handler
 extern void Menu_Task(void *pvParameters);			// Task Fuction
 
+/*TEST_TASK==========================================*/
+#define TEST_TASK_PRIORITY   				3  		// Task Priority
+#define TEST_TASK_STACK_SIZE 				128		// Task Stack Size
+TaskHandle_t TestTaskHandler;						// Task Handler
+void Test_task(void *pvParameters);					// Task Fuction
+
 /*GPIO_TASK==========================================*/
-#define GPIO_TASK_PRIORITY   				3  		// Task Priority
+#define GPIO_TASK_PRIORITY   				4  		// Task Priority
 #define GPIO_TASK_STACK_SIZE 				70		// Task Stack Size
 TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
+
+
+
 
 /* USER CODE END PV */
 
@@ -125,6 +135,7 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 	RotaryEcncorder_Init();
+	RotaryEcncorder_SetRange(0,10);
 	OLED_Init();
 
 //	test_window();
@@ -427,6 +438,13 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
 
+//	xTaskCreate((TaskFunction_t  )(Test_task),         	  	//Task Function
+//				(const char*     ) "Test_task",		      	//Task Name
+//				(uint16_t        ) TEST_TASK_STACK_SIZE, 	//Task Stack Size
+//				(void *          ) NULL,				    //Task Fuction Parameter
+//				(UBaseType_t     ) TEST_TASK_PRIORITY, 		//Task Priority
+//				(TaskHandle_t    ) &TestTaskHandler);	    //Task Handler
+
 	vTaskDelete(StartTaskHandler);
 	taskEXIT_CRITICAL();
 }
@@ -439,6 +457,18 @@ void GPIO_task(void *pvParameters){
 		vTaskDelay(2000/portTICK_PERIOD_MS);
 	}
 
+}
+
+void Test_task(void *pvParameters){
+	int32_t count=0;
+	int32_t count1=0;
+	RotaryEcncorder_SetRange(0,10);
+	while(1){
+		count1 = RotaryEcncorder_GetCount();
+		OLED_ShowNum(30,30,count1,4,6,12);
+		OLED_RefreshGram();
+		vTaskDelay(30/portTICK_PERIOD_MS);
+	}
 }
 /* USER CODE END 4 */
 
