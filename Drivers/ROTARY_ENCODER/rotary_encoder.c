@@ -1,12 +1,31 @@
 #include "rotary_encorder.h"
-#include "math.h"
-
+#include "main.h"
 //rotary Encoder rotate var
 static int32_t current_count = 0, last_count = 0,range_max = 32767,range_min = 0;
 
 //rotary Encoder sw var
 static int old_state = 1, current_state = 1, press_count = 0;
 
+
+void Button_task(void *pvParameters) {
+	while (1) {
+
+		if (EventGroupHandler !=NULL) {
+			Button_state bstate;
+			bstate = RotaryEcncorder_ButtonScan();
+			switch (bstate) {
+			case button_press:
+				xEventGroupSetBits(EventGroupHandler, BUTTON_PRESS_EVENT);
+				break;
+			default:
+				break;
+			}
+		}
+
+		vTaskDelay(10 / portTICK_PERIOD_MS);
+	}
+
+}
 
 Button_state RotaryEcncorder_ButtonScan(void) {
 	Button_state button_state;
@@ -37,14 +56,14 @@ void RotaryEcncorder_Init() {
 //   設定旋轉編碼器數值
 //   count:設定值範圍-32767~32767
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-int32_t RotaryEcncorder_SetCount(int32_t count) {
+void RotaryEcncorder_SetCount(int32_t count) {
 	__HAL_TIM_SET_COUNTER(&htim2,32767+count);
 }
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //   設定旋轉編碼器讀值範圍
 //   min~max:設定值範圍-32767~32767
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-int32_t RotaryEcncorder_SetRange(int32_t min ,int32_t max) {
+void RotaryEcncorder_SetRange(int32_t min ,int32_t max) {
 
 	int32_t temp;
 
@@ -52,7 +71,7 @@ int32_t RotaryEcncorder_SetRange(int32_t min ,int32_t max) {
 	{
 		temp = max;
 		max = min;
-		min = max;
+		min = temp;
 	}
 
 	if(min < -32767)min = -32767;

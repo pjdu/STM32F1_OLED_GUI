@@ -74,7 +74,7 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-
+#define BUTTON_PRESS_EVENT (1 << 0)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

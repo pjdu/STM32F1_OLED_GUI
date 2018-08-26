@@ -7,6 +7,7 @@
 #include "scrollbar.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "event_groups.h"
 
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
@@ -24,6 +25,13 @@
 extern WINDOWS MenuWindow;
 extern Scrollbar_Typedef MenuScrollbar;
 
+/*Menu_Task==========================================*/
+#define MENU_TASK_PRIORITY   				2  		// Task Priority
+#define MENU_TASK_STACK_SIZE 				128		// Task Stack Size
+extern TaskHandle_t MenuTaskHandler;						// Task Handler
+
+
+void Button_task(void *pvParameters);
 void menu_test(void);
 void Menu_Task(void *pvParameters);//運行菜單
 void MenuHookFun(uint8_t key);//鉤子函數

@@ -2,13 +2,8 @@
 #include "menu_ui.h"
 #include "windows.h"
 #include "scrollbar.h"
-//#include "joystick.h"
-//#include "keyTask.h"
-//#include "display.h"
 #include "SSD1322.h"
-//#include "config_param.h"
-//#include "24l01.h"
-//#include "menuL2_item.h"
+#include "rtc_ui.h"
 
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
@@ -23,7 +18,7 @@
  * All rights reserved
 ********************************************************************************/
 
-#define  MAIN_MENU_ITEMNUM    		10	//主菜單項數
+#define  MAIN_MENU_ITEMNUM    		5	//主菜單項數
 
 MenuItem_Typedef  mainMenu[MAIN_MENU_ITEMNUM];
 
@@ -42,23 +37,13 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 "3.飛行速度",
 "4.翻滾使能",
 "5.擴展模塊",
-"6.搖桿校準",
-"7.匹配四軸",
-"8.語言選擇",
-"9.重置",
-"10.退出",
 },
 {
-"1.Control Mode",
+"1.Time Setting",
 "2.Flight Mode",
 "3.Flight Speed",
 "4.Flip Enable",
 "5.Exp Module",
-"6.Joystick Calib",
-"7.Match MiniFly",
-"8.Language",
-"9.Reset",
-"10.Exit",
 },
 {
 "1.控制模式",
@@ -66,51 +51,22 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 "3.飛行速度",
 "4.翻滾使能",
 "5.擴展模塊",
-"6.搖桿校準",
-"7.匹配四軸",
-"8.語言選擇",
-"9.重置",
-"10.退出",
 },
 };
 
-void gotoJoystickCalibUI(void)
+void gotoTimeSettingUI(void)
 {
 	exitMenu();
-//	setShow_ui(JOYSTICK_CALIB_UI);
+	xTaskCreate((TaskFunction_t  )(RTCUI_Task),         	  	//Task Function
+				(const char*     ) "RTCUI_Task",		      	//Task Name
+				(uint16_t        ) RTCUI_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
+	vTaskSuspend(MenuTaskHandler);
 }
 
-void gotoMatchMiniFlyUI(void)
-{
-	exitMenu();
-//	setShow_ui(MATCH_UI);
-}
 
-void gotoResetUI(void)
-{
-	exitMenu();
-//	setShow_ui(RESET_UI);
-}
-
-//void expModuleMenuSet(enum expModuleID id)
-//{
-//	if(id == NO_MODULE)
-//	{
-//		mainMenu[4].childrenMenu = &expModuleMenu[0];
-//	}
-//	else if(id == LED_RING)
-//	{
-//		mainMenu[4].childrenMenu = &expModuleMenu[1];
-//	}
-//	else if(id == WIFI_CAMERA)
-//	{
-//		mainMenu[4].childrenMenu = &expModuleMenu[2];
-//	}
-//	else if(id == OPTICAL_FLOW)
-//	{
-//		mainMenu[4].childrenMenu = &expModuleMenu[3];
-//	}
-//}
 
 /*初始化主菜單*/
 void mainMenuInit(void)
@@ -127,33 +83,33 @@ void mainMenuInit(void)
 		mainMenu[i].childrenMenu = NULL;
 	}
 	mainMenu[0].isSelect = true;
-	mainMenu[0].Function = gotoNextMenu;
-	//mainMenu[0].childrenMenu = controlmodeMenu;
+	mainMenu[0].Function = gotoTimeSettingUI;
+	mainMenu[0].childrenMenu = NULL;
 
-	mainMenu[1].Function = gotoNextMenu;
+//	mainMenu[1].Function = gotoNextMenu;
 	//mainMenu[1].childrenMenu = flymodeMenu;
 	
-	mainMenu[2].Function = gotoNextMenu;
+//	mainMenu[2].Function = gotoNextMenu;
 	//mainMenu[2].childrenMenu = flyspeedMenu;
 	
-	mainMenu[3].Function = gotoNextMenu;
+//	mainMenu[3].Function = gotoNextMenu;
 	//mainMenu[3].childrenMenu = flipEnableMenu;
 	
-	mainMenu[4].Function = gotoNextMenu;
+//	mainMenu[4].Function = gotoNextMenu;
 	//mainMenu[4].childrenMenu = &expModuleMenu[0];
 	
-	mainMenu[5].Function = gotoJoystickCalibUI;
+//	mainMenu[5].Function = gotoJoystickCalibUI;
 	//mainMenu[5].childrenMenu = NULL;
 	
-	mainMenu[6].Function = gotoMatchMiniFlyUI;
+//	mainMenu[6].Function = gotoMatchMiniFlyUI;
 	//mainMenu[6].childrenMenu = NULL;
 	
-	mainMenu[7].Function = gotoNextMenu;
+//	mainMenu[7].Function = gotoNextMenu;
 	//mainMenu[7].childrenMenu = languageMenu;
 	
-	mainMenu[8].Function = gotoResetUI;
+//	mainMenu[8].Function = gotoResetUI;
 	//mainMenu[8].childrenMenu = NULL;
 	
-	mainMenu[9].Function = exitMenu;
+//	mainMenu[9].Function = exitMenu;
 	//mainMenu[9].childrenMenu = NULL;
 }

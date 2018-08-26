@@ -9,13 +9,19 @@
 #define ROTARY_ENCODER_ROTARY_ENCORDER_H_
 #include <stm32f1xx_hal.h>
 #include <stdint.h>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+
 extern TIM_HandleTypeDef htim2;
+extern EventGroupHandle_t EventGroupHandler;
 
 typedef enum {
-	button_press = 0,
-	button_debouce = 1,
-	button_release = 2,
-	button_long_press = 3
+	button_normal = 0,
+	button_press,
+	button_debouce,
+	button_release,
+	button_long_press
 } Button_state;
 
 typedef enum{
@@ -24,10 +30,16 @@ typedef enum{
 	state_counter_clock_wise
 }Rotary_state;
 
+/*Button_task==========================================*/
+#define Button_task_PRIORITY   				1  		// Task Priority
+#define Button_task_STACK_SIZE 				70		// Task Stack Size
+TaskHandle_t ButtonTaskHandler;						// Task Handler
+
+void Button_task(void *pvParameters);
 Button_state RotaryEcncorder_ButtonScan(void);
 void RotaryEcncorder_Init();
 int32_t RotaryEcncorder_GetCount();
 Rotary_state RotaryEcncorder_GetState();
-int32_t RotaryEcncorder_SetCount(int32_t count);
-int32_t RotaryEcncorder_SetRange(int32_t min ,int32_t max);
+void RotaryEcncorder_SetCount(int32_t count);
+void RotaryEcncorder_SetRange(int32_t min ,int32_t max);
 #endif /* ROTARY_ENCODER_ROTARY_ENCORDER_H_ */

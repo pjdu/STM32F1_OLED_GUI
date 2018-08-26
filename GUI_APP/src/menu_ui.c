@@ -2,10 +2,8 @@
 #include "windows.h"
 #include "scrollbar.h"
 #include "rotary_encorder.h"
-//#include "display.h
 #include "menuL1_item.h"
-//#include "menuL2_item.h"
-
+#include "main.h"
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
  * ALIENTEK MiniFly_Remotor
@@ -32,6 +30,7 @@ static int cur_sequence = 0; //某一級菜單選中項目的序號
 static bool isChangeMenu = true; //menu狀態是否改變
 const uint8_t* defaultTitle = "ATK MiniFly";
 
+
 //窗體
 WINDOWS MenuWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "IAQ Weather"};
@@ -39,6 +38,8 @@ WINDOWS MenuWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 //主窗體滾動條
 Scrollbar_Typedef MenuScrollbar = { .x = 245, .y = 14, .width = 10,
 		.height = 50, .itemsperpage = 3, .topitem = 0, .scbbarlen = 0, };
+
+TaskHandle_t MenuTaskHandler;
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //  從menu清單中取得被選中的Menu項目
@@ -147,6 +148,22 @@ void Menu_Task(void *pvParameters) {
 	RotaryEcncorder_SetRange(0,CurMenu->menuItemCount-1);
 
 	while(1){
+
+			//按鈕事件處理
+			if (EventGroupHandler != NULL) {
+			EventBits_t val;
+			val = xEventGroupWaitBits(EventGroupHandler,
+									  BUTTON_PRESS_EVENT,
+									  pdTRUE,
+									  pdFALSE, 10 / portTICK_PERIOD_MS);
+			if (val == BUTTON_PRESS_EVENT) {
+				CurItem = CurMenu + cur_sequence;
+				if (CurItem->Function != NULL) {
+					CurItem->Function();
+				}
+			}
+		}
+			// 旋轉編碼器旋轉界面處理
 			cur_rotateNum = RotaryEcncorder_GetCount();
 			rstate = RotaryEcncorder_GetState();
 			switch(rstate){
@@ -157,10 +174,8 @@ void Menu_Task(void *pvParameters) {
 					//清除窗口內容
 					GUI_RectangleFill(MenuWindow.x+1,MenuScrollbar.y,MenuScrollbar.x-1,MenuWindow.height-2,0);
 					Menu_SetSelected(cur_sequence,false);
-					//菜單項目序號--
 					cur_sequence = cur_rotateNum;
 					Menu_SetSelected(cur_sequence,true);
-					//光標位置--
 					CurMenu->cursorPosition = cur_sequence;
 					if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
 						showItems = CurMenu->menuItemCount;
@@ -180,24 +195,6 @@ void Menu_Task(void *pvParameters) {
 			vTaskDelay(100/portTICK_PERIOD_MS);
 	}
 
-//	switch(joystick2)
-//	{
-//
-//		case FORWARD:	//PITCH向前
-
-//			break;
-//
-//		case RIGHT:  //ROLL向右
-//			gotoNextMenu();//進入下一級菜單
-//			break;
-//
-//		case LEFT:  //ROLL向左
-//			gotoLastMenu();//進入上一級菜單
-//			break;
-//
-//		default :break;
-//	}
-//
 //	keyState = getKeyState();
 //	/*按下搖桿鍵執行菜單對應的動作*/
 //	if(keyState == KEY_J2_SHORT_PRESS)
