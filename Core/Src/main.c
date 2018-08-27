@@ -457,6 +457,7 @@ void GPIO_task(void *pvParameters){
 
 }
 
+
 //void Test_task(void *pvParameters){
 //	int32_t count=0;
 //	int32_t count1=0;
@@ -468,6 +469,15 @@ void GPIO_task(void *pvParameters){
 //		vTaskDelay(30/portTICK_PERIOD_MS);
 //	}
 //}
+
+void vApplicationMallocFailedHook( void ) {
+	while(1);
+	//printf("malloc failed -----------------------------------------------n");
+}
+void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
+	while(1);
+	//printf("stack overflow in task id %lu, name: %s -------------------------------------------n", (uint32t)xTask, pcTaskName);
+}
 /* USER CODE END 4 */
 
 /**

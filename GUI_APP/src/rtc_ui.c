@@ -2,48 +2,109 @@
 #include "rotary_encorder.h"
 #include "text.h"
 #include "menu_ui.h"
-WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
+
+static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
 
-RTC_TimeTypeDef rtcTime;
-RTC_DateTypeDef rtcDate;
-char *time;
-char *date;
+static RTC_TimeTypeDef rtcTime;
+static RTC_DateTypeDef rtcDate;
+static char *time;
+static RTC_Mode rtcmode = RTC_Mode_Normal;
 
+static button_press_count = 0;
 TaskHandle_t RTCUITaskHandler;
-
+static EventBits_t val;
 void RTCUI_Task(void *pvParameters)
 {
 	GUI_ClearSCR();
 	GUI_WindowsDraw(&RTCWindow);
 	while(1)
 	{
-//		if (EventGroupHandler != NULL) {
-//			EventBits_t val;
-//			val = xEventGroupWaitBits(EventGroupHandler,
-//									  BUTTON_PRESS_EVENT,
-//									  pdTRUE,
-//									  pdFALSE, 10 / portTICK_PERIOD_MS);
-//			if (val == BUTTON_PRESS_EVENT) {
-//				vTaskSuspend(RTCUITaskHandler);
-//				vTaskResume(MenuTaskHandler);
-//			}
-//		}
+		if (EventGroupHandler != NULL) {
 
-		if(HAL_RTC_GetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN) == HAL_OK){
-			time = pvPortMalloc(sizeof(char) * 9);
-			snprintf(time,9,"%2d:%2d:%2d",rtcTime.Hours,rtcTime.Minutes,rtcTime.Seconds);
-			show_str_mid(RTCWindow.x, RTCWindow.y+30, time,12,12,1,RTCWindow.width);
-			vPortFree(time);
+			val = xEventGroupWaitBits(EventGroupHandler,
+					BUTTON_PRESS_EVENT,
+					pdTRUE,
+					pdFALSE, 10 / portTICK_PERIOD_MS);
+			if (val == BUTTON_PRESS_EVENT) {
+				button_press_count++;
+				button_press_count %=7;
+			}
 		}
-		if(HAL_RTC_GetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN) == HAL_OK){
-			date = pvPortMalloc(sizeof(char) * 11);
-			snprintf(date,11,"%4d/%2d/%2d/",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date);
-			show_str_mid(RTCWindow.x, RTCWindow.y+15, date,12,12,1,RTCWindow.width);
-			vPortFree(date);
+		rtcmode = (RTC_Mode)button_press_count;
+		switch(rtcmode)
+		{
+			case RTC_Mode_Normal:
+				if(HAL_RTC_GetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN) == HAL_OK){
+					time = pvPortMalloc(sizeof(char) * 9);
+					snprintf(time,9,"%2d:%2d:%2d",rtcTime.Hours,rtcTime.Minutes,rtcTime.Seconds);
+					show_str_mid(RTCWindow.x, RTCWindow.y+30, time,12,12,1,RTCWindow.width);
+
+				}
+				if(HAL_RTC_GetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN) == HAL_OK){
+					time = pvPortMalloc(sizeof(char) * 11);
+					snprintf(time,11,"%4d/%2d/%2d/",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date);
+					show_str_mid(RTCWindow.x, RTCWindow.y+15, time,12,12,1,RTCWindow.width);
+					vPortFree(time);
+				}
+				break;
+			case RTC_Mode_Setting_Year:
+				RotaryEcncorder_SetRange(20,50);
+				int32_t year = RotaryEcncorder_GetCount();
+				rtcDate.Year = year;
+				time = pvPortMalloc(sizeof(char) * 3);
+				snprintf(time,3,"%2d",rtcDate.Year);
+				show_str(110, 15, time,12,12,0);
+				vPortFree(time);
+				break;
+			case RTC_Mode_Setting_Month:
+				RotaryEcncorder_SetRange(1,12);
+				int32_t mounth = RotaryEcncorder_GetCount();
+				rtcDate.Month = mounth;
+				time = pvPortMalloc(sizeof(char) * 3);
+				snprintf(time,3,"%2d",rtcDate.Month);
+				show_str(128, 15, time,12,12,0);
+				vPortFree(time);
+				break;
+			case RTC_Mode_Setting_Date:
+				RotaryEcncorder_SetRange(1,31);
+				int32_t date = RotaryEcncorder_GetCount();
+				rtcDate.Date = date;
+				time = pvPortMalloc(sizeof(char) * 3);
+				snprintf(time,3,"%2d",rtcDate.Date);
+				show_str(146, 15, time,12,12,0);
+				vPortFree(time);
+				break;
+//			case RTC_Mode_Setting_Hour:
+//				RotaryEcncorder_SetRange(0,24);
+//				int32_t hour = RotaryEcncorder_GetCount();
+//				rtcTime.Hours = hour;
+//				time = pvPortMalloc(sizeof(char) * 3);
+//				snprintf(time,3,"%2d",rtcTime.Hours);
+//				show_str(128, 30, time,12,12,0);
+//				vPortFree(time);
+//				break;
+//			case RTC_Mode_Setting_Minute:
+//				RotaryEcncorder_SetRange(0,59);
+//				int32_t minute = RotaryEcncorder_GetCount();
+//				rtcTime.Minutes = minute;
+//				time = pvPortMalloc(sizeof(char) * 3);
+//				snprintf(time,3,"%2d",rtcTime.Minutes);
+//				show_str(128, 30, time,12,12,0);
+//				vPortFree(time);
+//				break;
+//			case RTC_Mode_Setting_Second:
+//				RotaryEcncorder_SetRange(0,59);
+//				int32_t second = RotaryEcncorder_GetCount();
+//				rtcTime.Seconds = second;
+//				time = pvPortMalloc(sizeof(char) * 3);
+//				snprintf(time,3,"%2d",rtcTime.Seconds);
+//				show_str(128, 30, time,12,12,0);
+//				vPortFree(time);
+//				break;
+
 		}
-
-
+		OLED_ShowNum(30,50,rtcDate.Year,2,6,12);
 		GUI_Refresh();
 		vTaskDelay(100/portTICK_PERIOD_MS);
 	}

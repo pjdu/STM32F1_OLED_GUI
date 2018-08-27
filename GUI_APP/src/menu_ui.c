@@ -24,16 +24,15 @@
 static MenuItem_Typedef* CurMenu = mainMenu;  //當前Menu的控制元件
 static MenuItem_Typedef* CurItem;
 
-static int32_t cur_rotateNum=0;
+static int32_t cur_rotateNum = 0;
 static int selected;
 static int cur_sequence = 0; //某一級菜單選中項目的序號
 static bool isChangeMenu = true; //menu狀態是否改變
 const uint8_t* defaultTitle = "ATK MiniFly";
 
-
 //窗體
 WINDOWS MenuWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
-		.itemsperpage = 3, .topitem = 0, .title = "IAQ Weather"};
+		.itemsperpage = 3, .topitem = 0, .title = "IAQ Weather" };
 
 //主窗體滾動條
 Scrollbar_Typedef MenuScrollbar = { .x = 245, .y = 14, .width = 10,
@@ -132,8 +131,7 @@ void DisplayMenuInit(MenuItem_Typedef* menu) {
 	isChangeMenu = false;
 }
 
-
-void Menu_SetSelected(int item_index,bool selected){
+void Menu_SetSelected(int item_index, bool selected) {
 	//判斷index是否越界
 	CurItem = CurMenu + item_index;
 	CurItem->isSelect = selected;
@@ -143,19 +141,19 @@ void Menu_SetSelected(int item_index,bool selected){
 void Menu_Task(void *pvParameters) {
 
 	uint8_t showItems;
-	Rotary_state rstate =state_no_changed;
+	Rotary_state rstate = state_no_changed;
 	DisplayMenuInit(CurMenu);
-	RotaryEcncorder_SetRange(0,CurMenu->menuItemCount-1);
+	RotaryEcncorder_SetRange(0, CurMenu->menuItemCount - 1);
 
-	while(1){
+	while (1) {
 
-			//按鈕事件處理
-			if (EventGroupHandler != NULL) {
+		//按鈕事件處理
+		if (EventGroupHandler != NULL) {
 			EventBits_t val;
 			val = xEventGroupWaitBits(EventGroupHandler,
-									  BUTTON_PRESS_EVENT,
-									  pdTRUE,
-									  pdFALSE, 10 / portTICK_PERIOD_MS);
+			BUTTON_PRESS_EVENT,
+			pdTRUE,
+			pdFALSE, 10 / portTICK_PERIOD_MS);
 			if (val == BUTTON_PRESS_EVENT) {
 				CurItem = CurMenu + cur_sequence;
 				if (CurItem->Function != NULL) {
@@ -163,59 +161,41 @@ void Menu_Task(void *pvParameters) {
 				}
 			}
 		}
-			// 旋轉編碼器旋轉界面處理
-			cur_rotateNum = RotaryEcncorder_GetCount();
-			rstate = RotaryEcncorder_GetState();
-			switch(rstate){
-				case state_no_changed:
-					break;
-				case state_counter_clock_wise:
-				case state_clock_wise:
-					//清除窗口內容
-					GUI_RectangleFill(MenuWindow.x+1,MenuScrollbar.y,MenuScrollbar.x-1,MenuWindow.height-2,0);
-					Menu_SetSelected(cur_sequence,false);
-					cur_sequence = cur_rotateNum;
-					Menu_SetSelected(cur_sequence,true);
-					CurMenu->cursorPosition = cur_sequence;
-					if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
-						showItems = CurMenu->menuItemCount;
-					} else {
-						showItems = MenuWindow.itemsperpage;
-						MenuWindow.topitem = cur_sequence;
-					}
-					for (int i = 0; i < showItems; i++) {
-						MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
-						GUI_MenuItemDraw(MEMU_POSX_1, MEMU_POSY_1 + i * 15, Item);
-					}
-					MenuScrollbar.topitem = cur_sequence;
-					GUI_Scrollbar_SetPos(&MenuScrollbar);
-					GUI_Refresh();
-					break;
+		// 旋轉編碼器旋轉界面處理
+		cur_rotateNum = RotaryEcncorder_GetCount();
+		rstate = RotaryEcncorder_GetState();
+		switch (rstate) {
+		case state_no_changed:
+			break;
+		case state_counter_clock_wise:
+		case state_clock_wise:
+			//清除窗口內容
+			GUI_RectangleFill(MenuWindow.x + 1, MenuScrollbar.y,
+					MenuScrollbar.x - 1, MenuWindow.height - 2, 0);
+			Menu_SetSelected(cur_sequence, false);
+			cur_sequence = cur_rotateNum;
+			Menu_SetSelected(cur_sequence, true);
+			CurMenu->cursorPosition = cur_sequence;
+			if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
+				showItems = CurMenu->menuItemCount;
+			} else {
+				if (CurMenu->menuItemCount - cur_sequence< MenuWindow.itemsperpage) {
+					showItems = CurMenu->menuItemCount - cur_sequence;
+				} else {
+					showItems = MenuWindow.itemsperpage;
+				}
+				MenuWindow.topitem = cur_sequence;
 			}
-			vTaskDelay(100/portTICK_PERIOD_MS);
+			for (int i = 0; i < showItems; i++) {
+				MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
+				GUI_MenuItemDraw(MEMU_POSX_1, MEMU_POSY_1 + i * 15, Item);
+			}
+			MenuScrollbar.topitem = cur_sequence;
+			GUI_Scrollbar_SetPos(&MenuScrollbar);
+			GUI_Refresh();
+			break;
+		}
+		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
-
-//	keyState = getKeyState();
-//	/*按下搖桿鍵執行菜單對應的動作*/
-//	if(keyState == KEY_J2_SHORT_PRESS)
-//	{
-//		if(CurItem->Function != NULL)
-//		{
-//			CurItem->Function();
-//		}
-//	}
-//	/*超時退出菜單*/
-//	if(timeout++ > 100)
-//	{
-//		timeout = 0;
-//		if(CurItem->parentMenu != NULL)
-//		{
-//			//恢復默認選中
-//			CurItem->isSelect = false;
-//			CurItem = CurMenu + selected;
-//			CurItem->isSelect = true;
-//		}
-//		exitMenu();
-//	}
 }
 
