@@ -143,8 +143,8 @@ void Menu_Task(void *pvParameters) {
 	uint8_t showItems;
 	Rotary_state rstate = state_no_changed;
 	DisplayMenuInit(CurMenu);
+	RotaryEcncorder_Init();
 	RotaryEcncorder_SetRange(0, CurMenu->menuItemCount - 1);
-
 	while (1) {
 
 		//按鈕事件處理

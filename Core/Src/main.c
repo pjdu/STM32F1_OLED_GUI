@@ -133,8 +133,6 @@ int main(void)
   MX_TIM2_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-	RotaryEcncorder_Init();
-	RotaryEcncorder_SetRange(0,10);
 	OLED_Init();
 	mainMenuInit();
 
@@ -420,8 +418,8 @@ void START_task(void *pvParameters){
 				(uint16_t        ) Button_task_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) Button_task_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
 
-				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
 	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
 				(const char*     ) "Menu_Task",		      	//Task Name
 				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
@@ -471,10 +469,12 @@ void GPIO_task(void *pvParameters){
 //}
 
 void vApplicationMallocFailedHook( void ) {
+	vTaskSuspendAll();
 	while(1);
 	//printf("malloc failed -----------------------------------------------n");
 }
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
+	vTaskSuspendAll();
 	while(1);
 	//printf("stack overflow in task id %lu, name: %s -------------------------------------------n", (uint32t)xTask, pcTaskName);
 }

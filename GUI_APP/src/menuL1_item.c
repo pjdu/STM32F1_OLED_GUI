@@ -63,7 +63,8 @@ void gotoTimeSettingUI(void)
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
-	vTaskSuspend(MenuTaskHandler);
+	vTaskDelete(MenuTaskHandler);
+	//vTaskSuspend(MenuTaskHandler);
 }
 
 

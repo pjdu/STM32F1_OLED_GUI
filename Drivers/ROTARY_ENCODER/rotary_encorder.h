@@ -21,7 +21,8 @@ typedef enum {
 	button_press,
 	button_debouce,
 	button_release,
-	button_long_press
+	button_long_press,
+	button_long_press_1s
 } Button_state;
 
 typedef enum{

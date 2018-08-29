@@ -75,6 +75,7 @@
 
 /* USER CODE BEGIN Private defines */
 #define BUTTON_PRESS_EVENT (1 << 0)
+#define BUTTON_PRESS_1S_EVENT (1 << 1)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

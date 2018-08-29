@@ -2,6 +2,7 @@
 #include "main.h"
 //rotary Encoder rotate var
 static int32_t current_count = 0, last_count = 0,range_max = 32767,range_min = 0;
+static time_10ms;
 
 //rotary Encoder sw var
 static int old_state = 1, current_state = 1, press_count = 0;
@@ -17,6 +18,8 @@ void Button_task(void *pvParameters) {
 			case button_press:
 				xEventGroupSetBits(EventGroupHandler, BUTTON_PRESS_EVENT);
 				break;
+			case button_long_press_1s:
+				xEventGroupSetBits(EventGroupHandler, BUTTON_PRESS_1S_EVENT);
 			default:
 				break;
 			}
@@ -37,8 +40,15 @@ Button_state RotaryEcncorder_ButtonScan(void) {
 		button_state = button_press;
 		press_count = 1;
 	}
-//	else if (current_state == 0 && old_state == 0 && press_count == 1) {
-//		button_state = button_long_press;}
+	else if (current_state == 0 && old_state == 0 && press_count == 1) {
+		button_state = button_long_press;
+		time_10ms++;
+		if(time_10ms == 100)
+		{
+			time_10ms = 0;
+			button_state = button_long_press_1s;
+		}
+	}
 	else if (current_state == 1 && old_state == 0) {
 		press_count = 0;
 		button_state = button_release;
