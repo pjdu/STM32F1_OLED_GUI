@@ -31,6 +31,7 @@ void RTCUI_Task(void *pvParameters)
 			if(val  == BUTTON_PRESS_EVENT){
 				button_press_count++;
 				button_press_count %=7;
+				RotaryEcncorder_SetCount(0);
 			}
 			else if(val == BUTTON_PRESS_1S_EVENT){
 				button_press_count = 0;

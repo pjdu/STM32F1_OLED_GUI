@@ -28,7 +28,7 @@ static int32_t cur_rotateNum = 0;
 static int selected;
 static int cur_sequence = 0; //某一級菜單選中項目的序號
 static bool isChangeMenu = true; //menu狀態是否改變
-const uint8_t* defaultTitle = "ATK MiniFly";
+const uint8_t* defaultTitle = "IAQ Weather";
 
 //窗體
 WINDOWS MenuWindow = { .x = 0, .y = 0, .width = 256, .height = 64,

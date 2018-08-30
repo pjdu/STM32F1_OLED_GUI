@@ -49,10 +49,12 @@
 #include "rotary_encorder.h"
 #include "text.h"
 #include "menuL1_item.h"
-
+#include "iwdgtask.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+IWDG_HandleTypeDef hiwdg;
+
 RTC_HandleTypeDef hrtc;
 
 SPI_HandleTypeDef hspi2;
@@ -75,7 +77,7 @@ TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件組==========================================*/
+/*Event Group 事件�?==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -90,6 +92,7 @@ static void MX_GPIO_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
+static void MX_IWDG_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -132,6 +135,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 	OLED_Init();
 	mainMenuInit();
@@ -171,11 +175,13 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE
+                              |RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
@@ -215,6 +221,20 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* IWDG init function */
+static void MX_IWDG_Init(void)
+{
+
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_32;
+  hiwdg.Init.Reload = 2500;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
 
 /* RTC init function */
@@ -413,33 +433,34 @@ void START_task(void *pvParameters){
 	taskENTER_CRITICAL();
 	EventGroupHandler = xEventGroupCreate(); //create event group
 
+	//旋轉編碼器按鈕掃描任務
 	xTaskCreate((TaskFunction_t  )(Button_task),         	  	//Task Function
 				(const char*     ) "Button_task",		      	//Task Name
 				(uint16_t        ) Button_task_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) Button_task_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
-
+	//menu選單任務
 	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
 				(const char*     ) "Menu_Task",		      	//Task Name
 				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
-
+	//gpio閃爍任務
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
 				(const char*     ) "GPIO_task",		      	//Task Name
 				(uint16_t        ) GPIO_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
-
-//	xTaskCreate((TaskFunction_t  )(RTCUI_Task),         	  	//Task Function
-//				(const char*     ) "RTCUI_Task",		      	//Task Name
-//				(uint16_t        ) RTCUI_TASK_STACK_SIZE, 	//Task Stack Size
-//				(void *          ) NULL,				    //Task Fuction Parameter
-//				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 		//Task Priority
-//				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
+	//看門狗任務
+	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
+				(const char*     ) "iwdg_Task",		      	//Task Name
+				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
 
 	vTaskDelete(StartTaskHandler);
 	taskEXIT_CRITICAL();
