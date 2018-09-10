@@ -21,10 +21,12 @@
 #define   MEMU_POSX_1    20
 #define   MEMU_POSY_1    19
 
+//golbal var
+int32_t cur_rotateNum = 0;
+
 static MenuItem_Typedef* CurMenu = mainMenu;  //當前Menu的控制元件
 static MenuItem_Typedef* CurItem;
 
-static int32_t cur_rotateNum = 0;
 static int selected;
 static int cur_sequence = 0; //某一級菜單選中項目的序號
 static bool isChangeMenu = true; //menu狀態是否改變

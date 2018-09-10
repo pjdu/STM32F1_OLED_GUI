@@ -50,6 +50,7 @@
 #include "text.h"
 #include "menuL1_item.h"
 #include "iwdgtask.h"
+#include "rand_task.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -454,6 +455,15 @@ void START_task(void *pvParameters){
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
+
+	//亂數data產生任務
+	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
+				(const char*     ) "rand_task",		      	//Task Name
+				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
+
 	//看門狗任務
 	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
 				(const char*     ) "iwdg_Task",		      	//Task Name

@@ -4,6 +4,7 @@
 #include "scrollbar.h"
 #include "SSD1322.h"
 #include "rtc_ui.h"
+#include "sensor_ui_template.h"
 
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
@@ -40,10 +41,10 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 },
 {
 "1.Time Setting",
-"2.Flight Mode",
-"3.Flight Speed",
-"4.Flip Enable",
-"5.Exp Module",
+"2.Sensor 1 State",
+"3.Sensor 2 State",
+"4.Sensor 3 State",
+"5.Sensor 4 State",
 },
 {
 "1.控制模式",
@@ -54,20 +55,30 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 },
 };
 
-void gotoTimeSettingUI(void)
+static void gotoTimeSettingUI(void)
 {
 	exitMenu();
-	xTaskCreate((TaskFunction_t  )(RTCUI_Task),         	  	//Task Function
-				(const char*     ) "RTCUI_Task",		      	//Task Name
+	xTaskCreate((TaskFunction_t  )(RTCUI_Task),         	//Task Function
+				(const char*     ) "RTCUI_Task",		    //Task Name
 				(uint16_t        ) RTCUI_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 		//Task Priority
+				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 	//Task Priority
 				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
+
 	vTaskDelete(MenuTaskHandler);
-	//vTaskSuspend(MenuTaskHandler);
 }
 
-
+static void gotoSensorUI(void)
+{
+	exitMenu();
+	xTaskCreate((TaskFunction_t  )(SENSOR_UI_Task),         	//Task Function
+				(const char*     ) "SENSOR_UI_Task",		    //Task Name
+				(uint16_t        ) SENSOR_UI_Task_STACK_SIZE, 	//Task Stack Size
+				(void *          ) &(cur_rotateNum),			//Task Fuction Parameter
+				(UBaseType_t     ) SENSOR_UI_Task_PRIORITY, 	//Task Priority
+				(TaskHandle_t    ) &SensorUITaskHandler);	    //Task Handler
+	vTaskDelete(MenuTaskHandler);
+}
 
 /*初始化主菜單*/
 void mainMenuInit(void)
@@ -87,17 +98,18 @@ void mainMenuInit(void)
 	mainMenu[0].Function = gotoTimeSettingUI;
 	mainMenu[0].childrenMenu = NULL;
 
-//	mainMenu[1].Function = gotoNextMenu;
-	//mainMenu[1].childrenMenu = flymodeMenu;
+	mainMenu[1].Function = gotoSensorUI;
+	mainMenu[1].childrenMenu = NULL;
 	
-//	mainMenu[2].Function = gotoNextMenu;
-	//mainMenu[2].childrenMenu = flyspeedMenu;
+	mainMenu[2].Function = gotoSensorUI;
+	mainMenu[2].childrenMenu = NULL;
+
+	mainMenu[3].Function = gotoSensorUI;
+	mainMenu[3].childrenMenu = NULL;
 	
-//	mainMenu[3].Function = gotoNextMenu;
-	//mainMenu[3].childrenMenu = flipEnableMenu;
 	
-//	mainMenu[4].Function = gotoNextMenu;
-	//mainMenu[4].childrenMenu = &expModuleMenu[0];
+	mainMenu[4].Function = gotoSensorUI;
+	mainMenu[4].childrenMenu = NULL;
 	
 //	mainMenu[5].Function = gotoJoystickCalibUI;
 	//mainMenu[5].childrenMenu = NULL;

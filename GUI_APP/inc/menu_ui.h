@@ -24,7 +24,7 @@
 
 extern WINDOWS MenuWindow;
 extern Scrollbar_Typedef MenuScrollbar;
-
+extern int32_t cur_rotateNum;
 /*Menu_Task==========================================*/
 #define MENU_TASK_PRIORITY   				2  		// Task Priority
 #define MENU_TASK_STACK_SIZE 				128		// Task Stack Size

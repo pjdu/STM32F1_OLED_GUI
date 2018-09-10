@@ -31,7 +31,6 @@ void RTCUI_Task(void *pvParameters)
 			if(val  == BUTTON_PRESS_EVENT){
 				button_press_count++;
 				button_press_count %=7;
-				RotaryEcncorder_SetCount(0);
 			}
 			else if(val == BUTTON_PRESS_1S_EVENT){
 				button_press_count = 0;
@@ -62,7 +61,7 @@ void RTCUI_Task(void *pvParameters)
 				}
 				if(HAL_RTC_GetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN) == HAL_OK){
 					time = pvPortMalloc(sizeof(char) * 11);
-					snprintf(time,11,"%4d/%2d/%2d/",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date);
+					snprintf(time,12,"%4d/%2d/%2d/",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date);
 					show_str_mid(RTCWindow.x, RTCWindow.y+15, time,12,12,1,RTCWindow.width);
 					vPortFree(time);
 				}
