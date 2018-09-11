@@ -1,5 +1,6 @@
 #include "sensor_ui_template.h"
 #include "air_data.h"
+#include "rtc_ui.h"
 TaskHandle_t SensorUITaskHandler;
 static WINDOWS SensorWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0};
@@ -59,20 +60,58 @@ void SENSOR_UI_Task(void *pvParameters)
 				data.fan1Mode = getFan1Mode();
 				data.fan2Mode = getFan2Mode();
 
+				//Temperature
 				buf= pvPortMalloc(sizeof(char) * 9);
 				snprintf(buf,9,"Temp:%3f",data.temperature);
 				show_str(SensorWindow.x+5, SensorWindow.y+15,buf,12,12,1);
 				vPortFree(buf);
-
+				//Humidity
 				buf= pvPortMalloc(sizeof(char) * 9);
 				snprintf(buf,9,"Humi:%3f",data.humidity);
 				show_str(SensorWindow.x+5, SensorWindow.y+30,buf,12,12,1);
 				vPortFree(buf);
 
-				buf= pvPortMalloc(sizeof(char) * 9);
-				snprintf(buf,9,"CO2 :%3f",data.temperature);
+				//TIME
+				buf= pvPortMalloc(sizeof(char) * 25);
+				HAL_RTC_GetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN);
+				HAL_RTC_GetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN);
+				snprintf(buf,25,"TIME:%4d/%2d/%2d-%2d:%2d:%2d",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date,rtcTime.Hours,rtcTime.Minutes,rtcTime.Seconds);
 				show_str(SensorWindow.x+5, SensorWindow.y+45,buf,12,12,1);
 				vPortFree(buf);
+
+				//CO2
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"CO2 :%3f",data.temperature);
+				show_str(SensorWindow.x+65, SensorWindow.y+15,buf,12,12,1);
+				vPortFree(buf);
+				//VOC
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"VOC :%3f",data.voc);
+				show_str(SensorWindow.x+65, SensorWindow.y+30,buf,12,12,1);
+				vPortFree(buf);
+
+				//PM2_5
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"PM25:%3f",data.pm2_5);
+				show_str(SensorWindow.x+125, SensorWindow.y+15,buf,12,12,1);
+				vPortFree(buf);
+				//IAQ
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"IAQ :%3f",data.IAQMode);
+				show_str(SensorWindow.x+125, SensorWindow.y+30,buf,12,12,1);
+				vPortFree(buf);
+				//FAN1
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"FAN1:%3f",data.fan1Mode);
+				show_str(SensorWindow.x+185, SensorWindow.y+15,buf,12,12,1);
+				vPortFree(buf);
+				//FAN2
+				buf= pvPortMalloc(sizeof(char) * 9);
+				snprintf(buf,9,"FAN2:%3f",data.fan2Mode);
+				show_str(SensorWindow.x+185, SensorWindow.y+30,buf,12,12,1);
+				vPortFree(buf);
+
+
 
 				break;
 		}

@@ -23,6 +23,8 @@ typedef enum {
 
 
 extern RTC_HandleTypeDef hrtc;
+extern RTC_TimeTypeDef rtcTime;
+extern RTC_DateTypeDef rtcDate;
 
 #define RTCUI_TASK_PRIORITY   				3  		// Task Priority
 #define RTCUI_TASK_STACK_SIZE 				256		// Task Stack Size

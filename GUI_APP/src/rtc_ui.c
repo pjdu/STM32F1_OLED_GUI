@@ -6,8 +6,8 @@
 static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
 
-static RTC_TimeTypeDef rtcTime;
-static RTC_DateTypeDef rtcDate;
+RTC_TimeTypeDef rtcTime;
+RTC_DateTypeDef rtcDate;
 static char *time;
 static RTC_Mode rtcmode = RTC_Mode_Normal;
 
