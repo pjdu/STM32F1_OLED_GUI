@@ -62,6 +62,8 @@ SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim2;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 /*START_TASK==========================================*/
@@ -72,13 +74,13 @@ void START_task(void *pvParameters);				// Task Fuction
 
 
 /*GPIO_TASK==========================================*/
-#define GPIO_TASK_PRIORITY   				5  		// Task Priority
+#define GPIO_TASK_PRIORITY   				6  		// Task Priority
 #define GPIO_TASK_STACK_SIZE 				70		// Task Stack Size
 TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件�?==========================================*/
+/*Event Group 事件�???==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -94,6 +96,7 @@ static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
 static void MX_IWDG_Init(void);
+static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -137,6 +140,7 @@ int main(void)
   MX_TIM2_Init();
   MX_RTC_Init();
   MX_IWDG_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	OLED_Init();
 	mainMenuInit();
@@ -355,6 +359,25 @@ static void MX_TIM2_Init(void)
 
 }
 
+/* USART1 init function */
+static void MX_USART1_UART_Init(void)
+{
+
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -434,21 +457,21 @@ void START_task(void *pvParameters){
 	taskENTER_CRITICAL();
 	EventGroupHandler = xEventGroupCreate(); //create event group
 
-	//旋轉編碼器按鈕掃描任務
+	//??��?�編碼器??��?��?��?�任???
 	xTaskCreate((TaskFunction_t  )(Button_task),         	  	//Task Function
 				(const char*     ) "Button_task",		      	//Task Name
 				(uint16_t        ) Button_task_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) Button_task_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
-	//menu選單任務
+	//menu?��?��任�??
 	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
 				(const char*     ) "Menu_Task",		      	//Task Name
 				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
-	//gpio閃爍任務
+	//gpio??��?�任???
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
 				(const char*     ) "GPIO_task",		      	//Task Name
 				(uint16_t        ) GPIO_TASK_STACK_SIZE, 	//Task Stack Size
@@ -456,7 +479,7 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
 
-	//亂數data產生任務
+	//亂數data?��??�任???
 	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
 				(const char*     ) "rand_task",		      	//Task Name
 				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
@@ -464,7 +487,7 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
 
-	//看門狗任務
+	//??��???�任???
 	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
 				(const char*     ) "iwdg_Task",		      	//Task Name
 				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size

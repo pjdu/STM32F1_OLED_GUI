@@ -72,7 +72,7 @@ void RTCUI_Task(void *pvParameters)
 				rtcDate.Year = year;
 				time = pvPortMalloc(sizeof(char) * 3);
 				snprintf(time,3,"%2d",rtcDate.Year);
-				show_str(110, 15, time,12,12,0);
+				show_str(107, 15, time,12,12,0);
 				vPortFree(time);
 				break;
 			case RTC_Mode_Setting_Month:
@@ -81,7 +81,7 @@ void RTCUI_Task(void *pvParameters)
 				rtcDate.Month = mounth;
 				time = pvPortMalloc(sizeof(char) * 3);
 				snprintf(time,3,"%2d",rtcDate.Month);
-				show_str(128, 15, time,12,12,0);
+				show_str(125, 15, time,12,12,0);
 				vPortFree(time);
 				break;
 			case RTC_Mode_Setting_Date:
@@ -90,7 +90,7 @@ void RTCUI_Task(void *pvParameters)
 				rtcDate.Date = date;
 				time = pvPortMalloc(sizeof(char) * 3);
 				snprintf(time,3,"%2d",rtcDate.Date);
-				show_str(146, 15, time,12,12,0);
+				show_str(143, 15, time,12,12,0);
 				vPortFree(time);
 				break;
 			case RTC_Mode_Setting_Hour:
