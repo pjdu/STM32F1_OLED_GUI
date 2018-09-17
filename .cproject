@@ -19,7 +19,7 @@
 							<option id="com.atollic.truestudio.toolchain_options.mcu.513980036" name="Microcontroller" superClass="com.atollic.truestudio.toolchain_options.mcu" useByScannerDiscovery="false" value="STM32F103RC" valueType="string" />
 							<option id="com.atollic.truestudio.toolchain_options.vendor.1262035580" name="Vendor name" superClass="com.atollic.truestudio.toolchain_options.vendor" useByScannerDiscovery="false" value="STMicroelectronics" valueType="string" />
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.atollic.truestudio.exe.debug.toolchain.platform.2054752829" isAbstract="false" name="Debug platform" superClass="com.atollic.truestudio.exe.debug.toolchain.platform" />
-							<builder buildPath="${workspace_loc:/OLED_MENU}/Debug" customBuilderProperties="toolChainpathType=1|toolChainpathString=F:\\TrueStudio9\\TrueSTUDIO for STM32 9.0.0\\ARMTools\\bin|" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
+							<builder buildPath="${workspace_loc:/OLED_MENU}/Debug" customBuilderProperties="toolChainpathType=1|toolChainpathString=C:\\Program Files (x86)\\Atollic\\TrueSTUDIO for STM32 9.0.1\\ARMTools\\bin|" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug" />
 								</outputEntries>
@@ -49,6 +49,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OLED_MENU/Drivers/ROTARY_ENCODER}&quot;" />
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OLED_MENU/FreeRTOS/include}&quot;" />
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OLED_MENU/FreeRTOS/portable/GCC/ARM_CM3}&quot;" />
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OLED_MENU/Drivers/UART}&quot;" />
 								</option>
 								<option id="com.atollic.truestudio.gcc.symbols.defined.1670122205" name="Defined symbols" superClass="com.atollic.truestudio.gcc.symbols.defined" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))" />

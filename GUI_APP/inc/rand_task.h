@@ -6,7 +6,7 @@
 
 extern TaskHandle_t randTaskHandler;
 
-#define RAND_TASK_PRIORITY   				5  	 // Task Priority
+#define RAND_TASK_PRIORITY   				7  	 // Task Priority
 #define RAND_TASK_STACK_SIZE 				128		// Task Stack Size
 
 void rand_task();

@@ -51,6 +51,7 @@
 #include "menuL1_item.h"
 #include "iwdgtask.h"
 #include "rand_task.h"
+#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -80,7 +81,7 @@ TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件�???==========================================*/
+/*Event Group 事件�????==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -457,21 +458,21 @@ void START_task(void *pvParameters){
 	taskENTER_CRITICAL();
 	EventGroupHandler = xEventGroupCreate(); //create event group
 
-	//??��?�編碼器??��?��?��?�任???
-	xTaskCreate((TaskFunction_t  )(Button_task),         	  	//Task Function
-				(const char*     ) "Button_task",		      	//Task Name
+	//rotary encoder button task
+	xTaskCreate((TaskFunction_t  )(Button_task),         	//Task Function
+				(const char*     ) "Button_task",		    //Task Name
 				(uint16_t        ) Button_task_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) Button_task_PRIORITY, 		//Task Priority
+				(UBaseType_t     ) Button_task_PRIORITY, 	//Task Priority
 				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
-	//menu?��?��任�??
+	//menu task
 	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
 				(const char*     ) "Menu_Task",		      	//Task Name
 				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
-	//gpio??��?�任???
+	//gpio blink task
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
 				(const char*     ) "GPIO_task",		      	//Task Name
 				(uint16_t        ) GPIO_TASK_STACK_SIZE, 	//Task Stack Size
@@ -479,7 +480,7 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
 
-	//亂數data?��??�任???
+	//rand data genreate task
 	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
 				(const char*     ) "rand_task",		      	//Task Name
 				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
@@ -487,7 +488,15 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
 
-	//??��???�任???
+	//uart task
+	xTaskCreate((TaskFunction_t  )(uart_task),              //Task Function
+				(const char*     ) "uart_task",		      	//Task Name
+				(uint16_t        ) UART_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,			        //Task Fuction Parameter
+				(UBaseType_t     ) UART_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &uartTaskHandler);	    //Task Handler
+
+	//independent watch dog task
 	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
 				(const char*     ) "iwdg_Task",		      	//Task Name
 				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
@@ -523,14 +532,14 @@ void GPIO_task(void *pvParameters){
 //}
 
 void vApplicationMallocFailedHook( void ) {
-	vTaskSuspendAll();
 	while(1);
-	//printf("malloc failed -----------------------------------------------n");
+	HAL_UART_Transmit(&huart1,"Malloc failed\n",20,0xffff);
 }
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	vTaskSuspendAll();
 	while(1);
-	//printf("stack overflow in task id %lu, name: %s -------------------------------------------n", (uint32t)xTask, pcTaskName);
+	HAL_UART_Transmit(&huart1,"StackOverflow: ",20,0xffff);
+	HAL_UART_Transmit(&huart1,pcTaskName,strlen(pcTaskName),0xffff);
+	HAL_UART_Transmit(&huart1,"\r\n",3,0xffff);
 }
 /* USER CODE END 4 */
 
