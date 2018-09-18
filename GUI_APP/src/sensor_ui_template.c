@@ -8,16 +8,15 @@ static WINDOWS SensorWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 static EventBits_t val = 0;
 uint8_t *title_buf;
 static uint8_t *buf;
-int32_t view = 0;
+SENSOR_UI_VIEW view = SENSOR_UI_VIEW_PAGE1;
 static air_data_packet data;
 void SENSOR_UI_Task(void *pvParameters)
 {
+	int32_t rotatnum = 0;
+
 	GUI_ClearSCR();
-	SensorWindow.title = pvPortMalloc(sizeof(uint8_t) * 14);
-	view = *((int32_t *)pvParameters);
-	snprintf(SensorWindow.title ,14,"Sensor %d view",view);
 	GUI_WindowsDraw(&SensorWindow);
-	vPortFree(SensorWindow.title);
+	RotaryEcncorder_SetRange(1,4);
 	while(1)
 	{
 		if (EventGroupHandler != NULL) {
@@ -41,15 +40,19 @@ void SENSOR_UI_Task(void *pvParameters)
 				//刪除RTC UI 任務
 				vTaskDelete(SensorUITaskHandler);
 			}
-
-
 		}
-		SENSOR_UI_VIEW sview = (SENSOR_UI_VIEW)view;
-		switch(sview){
+		rotatnum = RotaryEcncorder_GetCount();
+		view = (SENSOR_UI_VIEW)rotatnum;
+		switch(view){
 			case SENSOR_UI_VIEW_PAGE1:
 			case SENSOR_UI_VIEW_PAGE2:
 			case SENSOR_UI_VIEW_PAGE3:
 			case SENSOR_UI_VIEW_PAGE4:
+
+				SensorWindow.title = pvPortMalloc(sizeof(uint8_t) * 14);
+				snprintf(SensorWindow.title ,14,"Sensor %d view",(int)view);
+				show_str_mid(SensorWindow.x, SensorWindow.y+1, SensorWindow.title,12,12,0,SensorWindow.width);
+				vPortFree(SensorWindow.title);
 
 				data.temperature = getTemperature();
 				data.humidity = getHumdity();
@@ -110,9 +113,6 @@ void SENSOR_UI_Task(void *pvParameters)
 				snprintf(buf,9,"FAN2:%3f",data.fan2Mode);
 				show_str(SensorWindow.x+185, SensorWindow.y+30,buf,12,12,1);
 				vPortFree(buf);
-
-
-
 				break;
 		}
 		GUI_Refresh();

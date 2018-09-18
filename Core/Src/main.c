@@ -81,7 +81,7 @@ TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件�????==========================================*/
+/*Event Group 事件�????==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -532,14 +532,14 @@ void GPIO_task(void *pvParameters){
 //}
 
 void vApplicationMallocFailedHook( void ) {
-	while(1);
 	HAL_UART_Transmit(&huart1,"Malloc failed\n",20,0xffff);
+	while(1);
 }
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	while(1);
 	HAL_UART_Transmit(&huart1,"StackOverflow: ",20,0xffff);
 	HAL_UART_Transmit(&huart1,pcTaskName,strlen(pcTaskName),0xffff);
 	HAL_UART_Transmit(&huart1,"\r\n",3,0xffff);
+	while(1);
 }
 /* USER CODE END 4 */
 

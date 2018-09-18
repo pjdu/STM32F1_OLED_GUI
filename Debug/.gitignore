@@ -1,1 +1,6 @@
 /FreeRTOS/
+/Core/
+/GUI_APP/
+/Command/
+/GUI_Driver/
+/startup/

@@ -1,5 +1,5 @@
 #include "uart.h"
-
+#include "get_command.h"
 uint8_t aRxBuffer;
 static uint8_t RxBuffer_Head;
 static uint8_t RxBuffer_Tail;
@@ -26,6 +26,7 @@ static void UART_RxBuffer_Write()
 	Uart_RxRingBuffer[RxBuffer_Tail++] = aRxBuffer;
 
 }
+
 
 static uint8_t UART_RxBuffer_isEmpty()
 {
@@ -81,19 +82,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void uart_task(void *pvParameters)
 {
 	char *buf;
+	int32_t len;
 	UART_Receieve_Init();
 	while(1)
 	{
-		if(RxBuffer_Len > 0)
+		len = UART_Avaliable();
+		if(len > 5)
 		{
-			buf = pvPortMalloc( RxBuffer_Len * sizeof(uint8_t));
+			buf = pvPortMalloc( len * sizeof(uint8_t));
 			for(int i = 0 ; i<RxBuffer_Len;i++)
 			{
 				buf[i] = UART_RxBuffer_read();
-				HAL_UART_Transmit(&huart1,&(buf[i]),1,1000);
 			}
+			analysisCOMMAND(buf,len);
 			vPortFree(buf);
 		}
-		vTaskDelay(100/portTICK_PERIOD_MS);
+		vTaskDelay(500/portTICK_PERIOD_MS);
 	}
 }
