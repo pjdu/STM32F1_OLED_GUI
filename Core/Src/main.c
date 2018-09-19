@@ -140,7 +140,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
-  MX_IWDG_Init();
+  //MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	OLED_Init();
@@ -472,6 +472,13 @@ void START_task(void *pvParameters){
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+	//uart task
+	xTaskCreate((TaskFunction_t  )(uart_task),              //Task Function
+				(const char*     ) "uart_task",		      	//Task Name
+				(uint16_t        ) UART_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,			        //Task Fuction Parameter
+				(UBaseType_t     ) UART_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &uartTaskHandler);	    //Task Handler
 	//gpio blink task
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
 				(const char*     ) "GPIO_task",		      	//Task Name
@@ -488,21 +495,15 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
 
-	//uart task
-	xTaskCreate((TaskFunction_t  )(uart_task),              //Task Function
-				(const char*     ) "uart_task",		      	//Task Name
-				(uint16_t        ) UART_TASK_STACK_SIZE, 	//Task Stack Size
-				(void *          ) NULL,			        //Task Fuction Parameter
-				(UBaseType_t     ) UART_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &uartTaskHandler);	    //Task Handler
 
-	//independent watch dog task
-	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
-				(const char*     ) "iwdg_Task",		      	//Task Name
-				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
-				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
+
+//	//independent watch dog task
+//	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
+//				(const char*     ) "iwdg_Task",		      	//Task Name
+//				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
+//				(void *          ) NULL,				    //Task Fuction Parameter
+//				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
+//				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
 
 	vTaskDelete(StartTaskHandler);
 	taskEXIT_CRITICAL();

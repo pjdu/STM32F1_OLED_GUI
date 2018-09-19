@@ -1,5 +1,6 @@
 #ifndef _AIR_DATA_H_
 #define _AIR_DATA_H_
+#include <stdint.h>
 typedef struct{
     double                  temperature;
     double                  humidity;
@@ -13,6 +14,28 @@ typedef struct{
     int                     len_updateTimeStamp;
 }air_data_packet;
 
+
+typedef struct{
+	uint8_t ShortAddress[2];
+	uint8_t Temperature[2];
+	uint8_t Humidity[2];
+	uint8_t VOC[2];
+	uint8_t CO2[2];
+	uint8_t PM2_5[2];
+}Device_Msg;
+
+
+enum {
+    CMD_STARCODE = 0,
+    CMD_ADU_LEN,
+    CMD_FC,
+    CMD_START_DATA
+};
+
+enum{
+	CMD_DEV_LIST = 0x02,
+	CMD_DEV_MSG	 = 0x03,
+};
 
 void setTemperature(double temperature);
 void setHumdity(double humidity);

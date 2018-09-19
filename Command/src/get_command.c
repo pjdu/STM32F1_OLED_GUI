@@ -17,6 +17,7 @@ void getCOMMANDInitial(void)
     commandBufferRxCount = 0;
 }
 
+
 uint8_t* readCOMMANDData(void)
 {
     uint8_t *cmd_ptr;
