@@ -52,6 +52,7 @@
 #include "iwdgtask.h"
 #include "rand_task.h"
 #include "uart.h"
+#include "decode_command.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -479,6 +480,15 @@ void START_task(void *pvParameters){
 				(void *          ) NULL,			        //Task Fuction Parameter
 				(UBaseType_t     ) UART_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &uartTaskHandler);	    //Task Handler
+
+	//decode command task
+	xTaskCreate((TaskFunction_t  )(decode_command_task),    //Task Function
+				(const char*     ) "decode_task",		    //Task Name
+				(uint16_t        ) DECODE_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) DECODE_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &decodeTaskHandler);	    //Task Handler
+
 	//gpio blink task
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
 				(const char*     ) "GPIO_task",		      	//Task Name
