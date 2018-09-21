@@ -19,13 +19,6 @@ extern TaskHandle_t SensorUITaskHandler;						// Task Handler
 
 void SENSOR_UI_Task(void *pvParameters);
 
-typedef enum {
-	SENSOR_UI_VIEW_PAGE1 = 1,
-	SENSOR_UI_VIEW_PAGE2,
-	SENSOR_UI_VIEW_PAGE3,
-	SENSOR_UI_VIEW_PAGE4,
-} SENSOR_UI_VIEW;
-
 
 
 #endif

@@ -498,12 +498,12 @@ void START_task(void *pvParameters){
 				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
 
 	//rand data genreate task
-	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
-				(const char*     ) "rand_task",		      	//Task Name
-				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
-				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
+//	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
+//				(const char*     ) "rand_task",		      	//Task Name
+//				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
+//				(void *          ) NULL,				    //Task Fuction Parameter
+//				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
+//				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
 
 
 
