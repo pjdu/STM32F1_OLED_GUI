@@ -13,7 +13,6 @@
 
 
 extern int device_number;
-extern Device_Msg dev_array[MAX_DEVICE_SIZE];
 
 extern TaskHandle_t decodeTaskHandler;
 

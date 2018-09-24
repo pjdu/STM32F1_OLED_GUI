@@ -1,12 +1,12 @@
 #include "get_command.h"
 #include "my_system_fun.h"
+#include "config.h"
 
-#define SEQ_COMMAND_BUFFER_SIZE 16
-#define RAW_DATA_BUFFER_SIZE 256
+
 
 static uint8_t sequenceHead;
 static uint8_t sequenceTail;
-static uint8_t sequence_command[SEQ_COMMAND_BUFFER_SIZE][16];
+static uint8_t sequence_command[CONFIG_SEQ_COMMAND_BUFFER_SIZE][CONFIG_MAX_COMMAND_SIZE];
 
 volatile uint8_t commandBufferRxCount;
 
@@ -23,7 +23,7 @@ uint8_t* readCOMMANDData(void)
     uint8_t *cmd_ptr;
     
     cmd_ptr = sequence_command[sequenceTail++];
-    if(SEQ_COMMAND_BUFFER_SIZE <= sequenceTail) {
+    if(CONFIG_SEQ_COMMAND_BUFFER_SIZE <= sequenceTail) {
         sequenceTail = 0;
     }
     
@@ -43,11 +43,11 @@ uint8_t analysisCOMMAND(uint8_t* ptrdata, uint16_t datasize)
         if(*ptrdata == ':' ) {
             len = *(ptrdata + 1);
             if((!checksumIETELHex(ptrdata, len)) &&
-            (SEQ_COMMAND_BUFFER_SIZE > commandBufferRxCount)) {
+            (CONFIG_SEQ_COMMAND_BUFFER_SIZE > commandBufferRxCount)) {
                 memcpy(sequence_command[sequenceHead++], ptrdata, len);
                 i = i + len - 1;
                 ptrdata = ptrdata + len;
-                if(SEQ_COMMAND_BUFFER_SIZE <= sequenceHead) {
+                if(CONFIG_SEQ_COMMAND_BUFFER_SIZE <= sequenceHead) {
                     sequenceHead = 0;
                 }
                 commandBufferRxCount++;
