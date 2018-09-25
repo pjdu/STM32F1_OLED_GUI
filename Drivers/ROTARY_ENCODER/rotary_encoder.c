@@ -1,5 +1,5 @@
 #include "rotary_encorder.h"
-#include "main.h"
+#include "config.h"
 //rotary Encoder rotate var
 static int32_t current_count = 0, last_count = 0,range_max = 32767,range_min = 0;
 static time_10ms;

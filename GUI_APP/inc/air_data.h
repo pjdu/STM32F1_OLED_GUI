@@ -41,6 +41,7 @@ typedef struct{
 		    uint16_t  pm2_5;
 			uint8_t   PM2_5[2];
 		};
+		uint16_t				  numberofDevice;
 		uint16_t                  fan1Mode;
 		uint16_t                  fan2Mode;
 		uint16_t                  IAQMode;
@@ -59,6 +60,7 @@ enum{
 	CMD_DEV_MSG	 = 0x03,
 };
 
+void setNumberofDevice(uint16_t num, int device_number);
 void setShortaddress(uint16_t shortaddress , int device_number);
 void setTemperature(uint16_t temperature, int device_number);
 void setHumdity(uint16_t humidity, int device_number);
@@ -69,6 +71,7 @@ void setFan1Mode(uint16_t fan1Mode, int device_number);
 void setFan2Mode(uint16_t fan2Mode, int device_number);
 void setIAQMode(uint16_t IAQMode, int device_number);
 
+uint16_t getNumberofDevice(int device_number);
 uint16_t getTemperature(int device_number);
 uint16_t getHumdity(int device_number);
 uint16_t getCo2(int device_number);

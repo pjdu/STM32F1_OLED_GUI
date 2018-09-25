@@ -2,7 +2,7 @@
 #include "rotary_encorder.h"
 #include "text.h"
 #include "menu_ui.h"
-
+#include "config.h"
 static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
 

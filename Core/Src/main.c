@@ -53,6 +53,7 @@
 #include "rand_task.h"
 #include "uart.h"
 #include "decode_command.h"
+#include "main_ui_page.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -466,13 +467,13 @@ void START_task(void *pvParameters){
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) Button_task_PRIORITY, 	//Task Priority
 				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
-	//menu task
-	xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
-				(const char*     ) "Menu_Task",		      	//Task Name
-				(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
+	//MAIN UI task
+	xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+				(const char*     ) "main task",		      	//Task Name
+				(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+				(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &mainUITaskHandler);	    //Task Handler
 	//uart task
 	xTaskCreate((TaskFunction_t  )(uart_task),              //Task Function
 				(const char*     ) "uart_task",		      	//Task Name

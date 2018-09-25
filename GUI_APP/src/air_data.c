@@ -5,6 +5,11 @@
 static Device_Msg dev_array[CONFIG_MAX_DEVICE_SIZE];
 
 //static air_data_packet air_data[CONFIG_MAX_DEVICE_SIZE];
+
+void setNumberofDevice(uint16_t num, int device_number)
+{
+	dev_array[device_number].numberofDevice = num;
+}
 void setShortaddress(uint16_t shortaddress , int device_number){
 	 dev_array[device_number].shortaddress = shortaddress;
 }
@@ -37,6 +42,13 @@ void setFan2Mode(uint16_t fan2Mode,int device_number){
 }
 void setIAQMode(uint16_t IAQMode,int device_number){
     dev_array[device_number].IAQMode = IAQMode;
+}
+
+
+
+uint16_t getNumberofDevice(int device_number)
+{
+	return dev_array[device_number].numberofDevice;
 }
 
 uint16_t getShortaddress(int device_number){

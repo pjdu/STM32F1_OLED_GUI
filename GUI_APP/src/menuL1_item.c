@@ -5,6 +5,7 @@
 #include "SSD1322.h"
 #include "rtc_ui.h"
 #include "sensor_ui_template.h"
+#include "main_ui_page.h"
 
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
@@ -44,7 +45,7 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 "2.Sensor 1 State",
 "3.Sensor 2 State",
 "4.Sensor 3 State",
-"5.Sensor 4 State",
+"5.return to Main",
 },
 {
 "1.控制模式",
@@ -54,7 +55,16 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 "5.擴展模塊",
 },
 };
-
+static void gotoMainUIPage(void){
+	exitMenu();
+	xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+				(const char*     ) "main task",		      		//Task Name
+				(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
+				(void *          ) NULL,				    	//Task Fuction Parameter
+				(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
+				(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+	vTaskDelete(MenuTaskHandler);
+}
 static void gotoTimeSettingUI(void)
 {
 	exitMenu();
@@ -74,7 +84,7 @@ static void gotoSensorUI(void)
 	xTaskCreate((TaskFunction_t  )(SENSOR_UI_Task),         	//Task Function
 				(const char*     ) "SENSOR_UI_Task",		    //Task Name
 				(uint16_t        ) SENSOR_UI_Task_STACK_SIZE, 	//Task Stack Size
-				(void *          ) &(cur_rotateNum),			//Task Fuction Parameter
+				(void *          ) NULL,						//Task Fuction Parameter
 				(UBaseType_t     ) SENSOR_UI_Task_PRIORITY, 	//Task Priority
 				(TaskHandle_t    ) &SensorUITaskHandler);	    //Task Handler
 	vTaskDelete(MenuTaskHandler);
@@ -108,7 +118,7 @@ void mainMenuInit(void)
 	mainMenu[3].childrenMenu = NULL;
 	
 	
-	mainMenu[4].Function = gotoSensorUI;
+	mainMenu[4].Function = gotoMainUIPage;
 	mainMenu[4].childrenMenu = NULL;
 	
 //	mainMenu[5].Function = gotoJoystickCalibUI;

@@ -3,7 +3,8 @@
 #include "scrollbar.h"
 #include "rotary_encorder.h"
 #include "menuL1_item.h"
-#include "main.h"
+#include "main_ui_page.h"
+#include "config.h"
 /********************************************************************************	 
  * 本程序只供學習使用，未經作者許可，不得用於其它任何用途
  * ALIENTEK MiniFly_Remotor
@@ -154,13 +155,20 @@ void Menu_Task(void *pvParameters) {
 			EventBits_t val;
 			val = xEventGroupWaitBits(EventGroupHandler,
 			BUTTON_PRESS_EVENT,
-			pdTRUE,
-			pdFALSE, 10 / portTICK_PERIOD_MS);
-			if (val == BUTTON_PRESS_EVENT) {
-				CurItem = CurMenu + cur_sequence;
-				if (CurItem->Function != NULL) {
-					CurItem->Function();
-				}
+			pdTRUE,	 //等待到bit自動清除
+			pdFALSE, //任一事件發生進入
+			10 / portTICK_PERIOD_MS);
+
+			switch(val)
+			{
+				case BUTTON_PRESS_EVENT:
+					CurItem = CurMenu + cur_sequence;
+					if (CurItem->Function != NULL) {
+						CurItem->Function();
+					}
+					break;
+				case NULL_EVENT_RAISE:
+					break;
 			}
 		}
 		// 旋轉編碼器旋轉界面處理

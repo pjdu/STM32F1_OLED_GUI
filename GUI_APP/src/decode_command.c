@@ -25,6 +25,7 @@ void decode_command_task()
 			case CMD_DEV_LIST:
 				index = 0;
 				device_number = ( adu_len - CONFIG_COMMAND_HEADER_SIZE) / 2;
+				setNumberofDevice(device_number,0);
 				break;
 			case CMD_DEV_MSG:
 
@@ -62,7 +63,7 @@ void decode_command_task()
 				setPM2_5(msg_temp.pm2_5,index);
 
 				index++;
-				if(index > CONFIG_MAX_DEVICE_SIZE)index = 0;
+				if(index > device_number)index = 0;
 
 				break;
 			default:
