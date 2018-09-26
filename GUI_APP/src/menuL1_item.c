@@ -20,7 +20,7 @@
  * All rights reserved
 ********************************************************************************/
 
-#define  MAIN_MENU_ITEMNUM    		5	//主菜單項數
+#define  MAIN_MENU_ITEMNUM    		3	//主菜單項數
 
 MenuItem_Typedef  mainMenu[MAIN_MENU_ITEMNUM];
 
@@ -43,7 +43,7 @@ const char* mainMenuLanguage[3][MAIN_MENU_ITEMNUM]={
 {
 "1.Time Setting",
 "2.Sensor 1 State",
-"3.Sensor 2 State",
+"3.return to Main",
 "4.Sensor 3 State",
 "5.return to Main",
 },
@@ -111,15 +111,15 @@ void mainMenuInit(void)
 	mainMenu[1].Function = gotoSensorUI;
 	mainMenu[1].childrenMenu = NULL;
 	
-	mainMenu[2].Function = gotoSensorUI;
+	mainMenu[2].Function = gotoMainUIPage;
 	mainMenu[2].childrenMenu = NULL;
 
-	mainMenu[3].Function = gotoSensorUI;
-	mainMenu[3].childrenMenu = NULL;
-	
-	
-	mainMenu[4].Function = gotoMainUIPage;
-	mainMenu[4].childrenMenu = NULL;
+//	mainMenu[3].Function = gotoSensorUI;
+//	mainMenu[3].childrenMenu = NULL;
+//
+//
+//	mainMenu[4].Function = gotoMainUIPage;
+//	mainMenu[4].childrenMenu = NULL;
 	
 //	mainMenu[5].Function = gotoJoystickCalibUI;
 	//mainMenu[5].childrenMenu = NULL;

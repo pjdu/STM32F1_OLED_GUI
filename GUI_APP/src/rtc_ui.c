@@ -2,6 +2,7 @@
 #include "rotary_encorder.h"
 #include "text.h"
 #include "menu_ui.h"
+#include "main_ui_page.h"
 #include "config.h"
 static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
@@ -10,12 +11,14 @@ RTC_TimeTypeDef rtcTime;
 RTC_DateTypeDef rtcDate;
 static char *time;
 static RTC_Mode rtcmode = RTC_Mode_Normal;
-
-static button_press_count = 0;
 TaskHandle_t RTCUITaskHandler;
 static EventBits_t val = 0;
 void RTCUI_Task(void *pvParameters)
 {
+	int  button_press_count = 0;
+	int time3s_counter = 0 ;
+	Rotary_state rstate = state_no_changed;
+
 	GUI_ClearSCR();
 	GUI_WindowsDraw(&RTCWindow);
 	while(1)
@@ -28,24 +31,46 @@ void RTCUI_Task(void *pvParameters)
 					pdFALSE,	//任一事件發生進入
 					10 / portTICK_PERIOD_MS);
 			//按鈕事件處理
-			if(val  == BUTTON_PRESS_EVENT){
-				button_press_count++;
-				button_press_count %=7;
-			}
-			else if(val == BUTTON_PRESS_1S_EVENT){
-				button_press_count = 0;
-				//返回前一頁
-				GUI_ClearSCR();
-				//恢復MENU UI 任務
-				xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
-							(const char*     ) "Menu_Task",		      	//Task Name
-							(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
-							(void *          ) NULL,				    //Task Fuction Parameter
-							(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-							(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
-				//刪除RTC UI 任務
-				vTaskDelete(RTCUITaskHandler);
-
+			switch(val)
+			{
+				case BUTTON_PRESS_EVENT:
+					button_press_count++;
+					button_press_count %=7;
+					time3s_counter = 0;
+					break;
+				case BUTTON_PRESS_1S_EVENT:
+					GUI_ClearSCR();
+					HAL_RTC_SetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN);
+					HAL_RTC_SetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN);
+					//恢復MENU UI 任務
+					xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
+								(const char*     ) "Menu_Task",		      	//Task Name
+								(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
+								(void *          ) NULL,				    //Task Fuction Parameter
+								(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
+								(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+					//刪除RTC UI 任務
+					vTaskDelete(RTCUITaskHandler);
+					break;
+				case NULL_EVENT_RAISE:
+					rstate = RotaryEcncorder_GetState();
+					if(rstate == state_no_changed){
+						time3s_counter++;
+						//沒有任何按鈕事件且無旋轉持續3秒
+						if(time3s_counter >= 30){
+							HAL_RTC_SetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN);
+							HAL_RTC_SetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN);
+							// 30 * 100ms = 3s
+							xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+										(const char*     ) "main task",		      		//Task Name
+										(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
+										(void *          ) NULL,				    	//Task Fuction Parameter
+										(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
+										(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+							vTaskDelete(RTCUITaskHandler);
+						}
+					}
+					break;
 			}
 		}
 		//RTC 模式切換與設定處理

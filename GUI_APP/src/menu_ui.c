@@ -33,6 +33,7 @@ static int cur_sequence = 0; //某一級菜單選中項目的序號
 static bool isChangeMenu = true; //menu狀態是否改變
 const uint8_t* defaultTitle = "IAQ Weather";
 
+
 //窗體
 WINDOWS MenuWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "IAQ Weather" };
@@ -144,6 +145,7 @@ void Menu_SetSelected(int item_index, bool selected) {
 void Menu_Task(void *pvParameters) {
 
 	uint8_t showItems;
+	int time3s_counter = 0 ;
 	Rotary_state rstate = state_no_changed;
 	DisplayMenuInit(CurMenu);
 	RotaryEcncorder_Init();
@@ -168,43 +170,59 @@ void Menu_Task(void *pvParameters) {
 					}
 					break;
 				case NULL_EVENT_RAISE:
+					// 旋轉編碼器旋轉界面處理
+					cur_rotateNum = RotaryEcncorder_GetCount();
+					rstate = RotaryEcncorder_GetState();
+					switch (rstate) {
+					case state_no_changed:
+						time3s_counter ++;
+						//沒有任何按鈕事件且無旋轉持續3秒
+						if(time3s_counter >= 30){
+							// 30 * 100ms = 3s
+							exitMenu();
+							xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+										(const char*     ) "main task",		      		//Task Name
+										(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
+										(void *          ) NULL,				    	//Task Fuction Parameter
+										(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
+										(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+							vTaskDelete(MenuTaskHandler);
+						}
+						break;
+					case state_counter_clock_wise:
+					case state_clock_wise:
+						//清除窗口內容
+						time3s_counter = 0;
+
+						GUI_RectangleFill(MenuWindow.x + 1, MenuScrollbar.y,
+								MenuScrollbar.x - 1, MenuWindow.height - 2, 0);
+						Menu_SetSelected(cur_sequence, false);
+						cur_sequence = cur_rotateNum;
+						Menu_SetSelected(cur_sequence, true);
+						CurMenu->cursorPosition = cur_sequence;
+						if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
+							showItems = CurMenu->menuItemCount;
+						} else {
+							if (CurMenu->menuItemCount - cur_sequence< MenuWindow.itemsperpage) {
+								showItems = CurMenu->menuItemCount - cur_sequence;
+							} else {
+								showItems = MenuWindow.itemsperpage;
+							}
+							MenuWindow.topitem = cur_sequence;
+						}
+						for (int i = 0; i < showItems; i++) {
+							MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
+							GUI_MenuItemDraw(MEMU_POSX_1, MEMU_POSY_1 + i * 15, Item);
+						}
+						MenuScrollbar.topitem = cur_sequence;
+						GUI_Scrollbar_SetPos(&MenuScrollbar);
+						GUI_Refresh();
+						break;
+					}
 					break;
 			}
 		}
-		// 旋轉編碼器旋轉界面處理
-		cur_rotateNum = RotaryEcncorder_GetCount();
-		rstate = RotaryEcncorder_GetState();
-		switch (rstate) {
-		case state_no_changed:
-			break;
-		case state_counter_clock_wise:
-		case state_clock_wise:
-			//清除窗口內容
-			GUI_RectangleFill(MenuWindow.x + 1, MenuScrollbar.y,
-					MenuScrollbar.x - 1, MenuWindow.height - 2, 0);
-			Menu_SetSelected(cur_sequence, false);
-			cur_sequence = cur_rotateNum;
-			Menu_SetSelected(cur_sequence, true);
-			CurMenu->cursorPosition = cur_sequence;
-			if (CurMenu->menuItemCount <= MenuWindow.itemsperpage) {
-				showItems = CurMenu->menuItemCount;
-			} else {
-				if (CurMenu->menuItemCount - cur_sequence< MenuWindow.itemsperpage) {
-					showItems = CurMenu->menuItemCount - cur_sequence;
-				} else {
-					showItems = MenuWindow.itemsperpage;
-				}
-				MenuWindow.topitem = cur_sequence;
-			}
-			for (int i = 0; i < showItems; i++) {
-				MenuItem_Typedef* Item = CurMenu + MenuWindow.topitem + i;
-				GUI_MenuItemDraw(MEMU_POSX_1, MEMU_POSY_1 + i * 15, Item);
-			}
-			MenuScrollbar.topitem = cur_sequence;
-			GUI_Scrollbar_SetPos(&MenuScrollbar);
-			GUI_Refresh();
-			break;
-		}
+
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }

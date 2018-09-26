@@ -2,6 +2,8 @@
 #include "air_data.h"
 #include "rtc_ui.h"
 #include "decode_command.h"
+#include "rotary_encorder.h"
+#include "main_ui_page.h"
 
 
 TaskHandle_t SensorUITaskHandler;
@@ -18,6 +20,8 @@ static Device_Msg data;
 void SENSOR_UI_Task(void *pvParameters)
 {
 	int32_t rotatnum = 0;
+	int time3s_counter = 0 ;
+	Rotary_state rstate = state_no_changed;
 
 	GUI_ClearSCR();
 	GUI_WindowsDraw(&SensorWindow);
@@ -32,18 +36,38 @@ void SENSOR_UI_Task(void *pvParameters)
 					pdFALSE,	//任一事件發生進入
 					10 / portTICK_PERIOD_MS);
 			//按鈕事件處理
-			if(val == BUTTON_PRESS_1S_EVENT){
-				//返回前一頁
-				GUI_ClearSCR();
-				//恢復MENU UI 任務
-				xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
-							(const char*     ) "Menu_Task",		      	//Task Name
-							(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
-							(void *          ) NULL,				    //Task Fuction Parameter
-							(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-							(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
-				//刪除RTC UI 任務
-				vTaskDelete(SensorUITaskHandler);
+
+			switch(val)
+			{
+				case BUTTON_PRESS_1S_EVENT:
+					//返回前一頁
+					GUI_ClearSCR();
+					//恢復MENU UI 任務
+					xTaskCreate((TaskFunction_t  )(Menu_Task),         	  	//Task Function
+								(const char*     ) "Menu_Task",		      	//Task Name
+								(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
+								(void *          ) NULL,				    //Task Fuction Parameter
+								(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
+								(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+					//刪除Sensor UI 任務
+					vTaskDelete(SensorUITaskHandler);
+					break;
+				case NULL_EVENT_RAISE:
+					rstate = RotaryEcncorder_GetState();
+					if(rstate == state_no_changed){
+						time3s_counter++;
+						if(time3s_counter > 10){
+						//delay 300ms * 10 ~= 3s
+						xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+									(const char*     ) "main task",		      		//Task Name
+									(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
+									(void *          ) NULL,				    	//Task Fuction Parameter
+									(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
+									(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+						vTaskDelete(SensorUITaskHandler);
+						}
+					}
+					break;
 			}
 		}
 
