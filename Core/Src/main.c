@@ -83,7 +83,7 @@ TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件�????==========================================*/
+/*Event Group 事件�?????==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -269,9 +269,6 @@ static void MX_RTC_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  /* USER CODE BEGIN RTC_Init 2 */
-
-  /* USER CODE END RTC_Init 2 */
 
     /**Initialize RTC and set the Time and Date 
     */
@@ -283,9 +280,6 @@ static void MX_RTC_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  /* USER CODE BEGIN RTC_Init 3 */
-
-  /* USER CODE END RTC_Init 3 */
 
   DateToUpdate.WeekDay = RTC_WEEKDAY_WEDNESDAY;
   DateToUpdate.Month = RTC_MONTH_AUGUST;
@@ -296,9 +290,6 @@ static void MX_RTC_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  /* USER CODE BEGIN RTC_Init 4 */
-
-  /* USER CODE END RTC_Init 4 */
 
 }
 
@@ -367,7 +358,7 @@ static void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 38400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
