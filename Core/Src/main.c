@@ -54,6 +54,7 @@
 #include "uart.h"
 #include "decode_command.h"
 #include "main_ui_page.h"
+#include "rtc.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -141,21 +142,19 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI2_Init();
   MX_TIM2_Init();
-  MX_RTC_Init();
- // MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	OLED_Init();
-	mainMenuInit();
+  MY_RTC_Init();
+  OLED_Init();
+  mainMenuInit();
+  xTaskCreate((TaskFunction_t  )(START_task),         	//Task Function
+			  (const char*     ) "START_task",		    //Task Name
+			  (uint16_t        ) START_TASK_STACK_SIZE,  //Task Stack Size
+			  (void *          ) NULL,				   //Task Fuction Parameter
+			  (UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
+			  (TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
 
-	xTaskCreate((TaskFunction_t  )(START_task),         	//Task Function
-				(const char*     ) "START_task",		    //Task Name
-				(uint16_t        ) START_TASK_STACK_SIZE,  //Task Stack Size
-				(void *          ) NULL,				   //Task Fuction Parameter
-				(UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
-				(TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
-
-	vTaskStartScheduler();
+  vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */

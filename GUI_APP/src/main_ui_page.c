@@ -3,6 +3,7 @@
 #include "config.h"
 #include "air_data.h"
 #include "rtc_ui.h"
+#include "rtc.h"
 
 TaskHandle_t mainUITaskHandler;
 static WINDOWS mainUIWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
@@ -101,14 +102,10 @@ void main_ui_task(void *pvparameter)
 
 		//TIME
 		buf = pvPortMalloc(sizeof(char) * 25);
-		HAL_RTC_GetTime(&hrtc, &rtcTime, RTC_FORMAT_BIN);
-		HAL_RTC_GetDate(&hrtc, &rtcDate, RTC_FORMAT_BIN);
-		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", rtcDate.Year + 2000,
-														  rtcDate.Month,
-														  rtcDate.Date,
-														  rtcTime.Hours,
-														  rtcTime.Minutes,
-														  rtcTime.Seconds);
+		RTC_Get();
+		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", calendar.w_year,calendar.w_month,
+														  calendar.w_date,calendar.hour,
+														  calendar.min,calendar.sec);
 		show_str(mainUIWindow.x + 65, mainUIWindow.y + 45, buf, 12, 12, 1);
 		vPortFree(buf);
 
