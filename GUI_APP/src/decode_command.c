@@ -63,7 +63,7 @@ void decode_command_task()
 				setPM2_5(msg_temp.pm2_5,index);
 
 				index++;
-				if(index > device_number)index = 0;
+				if(index > device_number-1)index = 0;
 
 				break;
 			default:

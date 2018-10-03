@@ -15,10 +15,10 @@ display file structure command:
 	static EventBits_t val = 0;
 	
 	val = xEventGroupWaitBits(EventGroupHandler,
-							  BUTTON_PRESS_EVENT | BUTTON_PRESS_1S_EVENT, //短按事件和長按事件
-							  pdTRUE, 	//等待完成自動清除
-							  pdFALSE,	//任一事件發生進入
-							  10 / portTICK_PERIOD_MS);//等10ms看看有無事件發生
+				  BUTTON_PRESS_EVENT | BUTTON_PRESS_1S_EVENT, //短按事件和長按事件
+				  pdTRUE, 	//等待完成自動清除
+				  pdFALSE,	//任一事件發生進入
+				  10 / portTICK_PERIOD_MS);//等10ms看看有無事件發生
 	switch(val)
 	{
 		case BUTTON_PRESS_EVENT:

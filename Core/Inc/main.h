@@ -49,6 +49,10 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define LED1_Pin GPIO_PIN_0
+#define LED1_GPIO_Port GPIOC
+#define LED2_Pin GPIO_PIN_1
+#define LED2_GPIO_Port GPIOC
 #define ROTARY_SW_Pin GPIO_PIN_3
 #define ROTARY_SW_GPIO_Port GPIOC
 #define ROTARY_A_Pin GPIO_PIN_0
@@ -61,10 +65,6 @@
 #define OLED_RST_GPIO_Port GPIOB
 #define OLED_DC_Pin GPIO_PIN_6
 #define OLED_DC_GPIO_Port GPIOC
-#define LED0_Pin GPIO_PIN_8
-#define LED0_GPIO_Port GPIOA
-#define LED1_Pin GPIO_PIN_2
-#define LED1_GPIO_Port GPIOD
 
 /* ########################## Assert Selection ############################## */
 /**

@@ -83,7 +83,7 @@ TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
 
-/*Event Group 事件�?????==========================================*/
+/*Event Group ==========================================*/
 EventGroupHandle_t EventGroupHandler;
 
 
@@ -142,7 +142,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
-  //MX_IWDG_Init();
+ // MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	OLED_Init();
@@ -257,14 +257,28 @@ static void MX_RTC_Init(void)
   RTC_DateTypeDef DateToUpdate;
 
   /* USER CODE BEGIN RTC_Init 1 */
-
+  if(HAL_RTCEx_BKUPRead(&hrtc,RTC_BKP_DR1)!= 0x32F1){
+	  //both rtc battery power and system power diconnect
+	  //backup valude will be clear to zero
+	  HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR1,0x32F1);
+  }
+  else{
+	   hrtc.Instance = RTC;
+	   hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
+	   hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE;
+	   if (HAL_RTC_Init(&hrtc) != HAL_OK)
+	   {
+	     _Error_Handler(__FILE__, __LINE__);
+	   }
+	  return;
+  }
   /* USER CODE END RTC_Init 1 */
 
     /**Initialize RTC Only 
     */
   hrtc.Instance = RTC;
   hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
-  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
+  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE;
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -391,16 +405,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SPI_CS_Pin|OLED_RST_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+  /*Configure GPIO pins : LED1_Pin LED2_Pin */
+  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ROTARY_SW_Pin */
   GPIO_InitStruct.Pin = ROTARY_SW_Pin;
@@ -428,20 +446,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(OLED_DC_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LED0_Pin */
-  GPIO_InitStruct.Pin = LED0_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED0_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LED1_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
 
 }
 
@@ -513,9 +517,9 @@ void START_task(void *pvParameters){
 void GPIO_task(void *pvParameters){
 
 	while(1){
-		HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
-		vTaskDelay(1000/portTICK_PERIOD_MS);
 		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+		vTaskDelay(1000/portTICK_PERIOD_MS);
+		HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 		vTaskDelay(2000/portTICK_PERIOD_MS);
 	}
 
