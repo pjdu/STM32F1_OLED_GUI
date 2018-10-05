@@ -4,7 +4,7 @@
 #include "decode_command.h"
 #include "rotary_encorder.h"
 #include "main_ui_page.h"
-
+#include "rtc.h"
 
 TaskHandle_t SensorUITaskHandler;
 static WINDOWS SensorWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
@@ -124,11 +124,11 @@ void SENSOR_UI_Task(void *pvParameters)
 
 		//TIME
 		buf = pvPortMalloc(sizeof(char) * 25);
-		HAL_RTC_GetTime(&hrtc, &rtcTime, RTC_FORMAT_BIN);
-		HAL_RTC_GetDate(&hrtc, &rtcDate, RTC_FORMAT_BIN);
-		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", rtcDate.Year + 2000,
-				rtcDate.Month, rtcDate.Date, rtcTime.Hours, rtcTime.Minutes,
-				rtcTime.Seconds);
+
+		RTC_Get();
+		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", calendar.w_year,calendar.w_month,
+														  calendar.w_date,calendar.hour,
+														  calendar.min,calendar.sec);
 		show_str(SensorWindow.x + 65, SensorWindow.y + 45, buf, 12, 12, 1);
 		vPortFree(buf);
 

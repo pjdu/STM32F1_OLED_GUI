@@ -1,6 +1,6 @@
 /*
- * FreeRTOS Kernel V10.0.1
- * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V10.1.1
+ * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -191,7 +191,8 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 
 static void prvTaskExitError( void )
 {
-	volatile uint32_t ulDummy = 0UL;
+volatile uint32_t ulDummy = 0UL;
+
 	/* A function that implements a task must not exit or attempt to return to
 	its caller as there is nothing to return to.  If a task wants to exit it
 	should instead call vTaskDelete( NULL ).
@@ -215,7 +216,7 @@ static void prvTaskExitError( void )
 
 void vPortSVCHandler( void )
 {
-	__asm volatile(
+	__asm volatile (
 					"	ldr	r3, pxCurrentTCBConst2		\n" /* Restore the context. */
 					"	ldr r1, [r3]					\n" /* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
 					"	ldr r0, [r1]					\n" /* The first item in pxCurrentTCB is the task top of stack. */

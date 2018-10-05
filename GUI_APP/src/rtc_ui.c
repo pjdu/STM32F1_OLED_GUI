@@ -108,7 +108,6 @@ void RTCUI_Task(void *pvParameters)
 				snprintf(time,3,"%2d",year);
 				show_str(107, 15, time,12,12,0);
 				vPortFree(time);
-				RTC_Set(tmp_calendar.w_year,tmp_calendar.w_month,tmp_calendar.w_date,tmp_calendar.hour,tmp_calendar.min,tmp_calendar.sec);
 				break;
 			case RTC_Mode_Setting_Month:
 				RotaryEcncorder_SetRange(1,12);

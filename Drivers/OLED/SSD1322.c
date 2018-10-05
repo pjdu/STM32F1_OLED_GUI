@@ -12,7 +12,7 @@ extern SPI_HandleTypeDef hspi2;
 #define Max_Row		0x3F			// 64-1
 #define	Brightness	0x0F
 
-uint16_t gram[64][64] = { 0 }; // row : 64 col: 64 *4 = 256   u16 = [p1,p2,p3,p4]
+uint16_t gram[64][64] = { 0 }; // row : 64 col: 64 *4 = 256   u16 = [p1,p2,p3,p4] px ,x=1~4 ,unit = 4bit
 static void write(uint8_t bytes, uint8_t is_data) {
 	uint8_t tmp = bytes;
 	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, RESET);

@@ -70,6 +70,33 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	}
 }
 
+void uart_putchar(int ch)
+{
+	HAL_UART_Transmit(&huart1,&ch,1,0xffff);
+}
+
+// vsprintf stack 基本需要200起跳
+//功能:和printf的功能相同,但將printf導入到uart周邊進行輸出
+////RTOS Support
+////buffer 是藉由rtos,採用動態記憶體配置，若無rtos,可自行定義一個全域變數矩陣如:buffer[200];
+//void myprintf(char*format, ...)
+//{
+//	int ret;
+//	va_list aptr;
+//	char* buffer;
+//	buffer = pvPortMalloc(sizeof(char)*strlen(format));
+//
+//	va_start(aptr,format);
+//	//ret = vsnprintf(buffer,sizeof(char)*strlen(format),format,aptr);
+//	ret = vsprintf(buffer, format, aptr);
+//	va_end(aptr);
+//	HAL_UART_Transmit(&huart1,(uint8_t*)buffer,strlen(buffer),0xffff);
+//	vPortFree(buffer);
+//	//return ret;
+//
+//}
+
+
 // uart process task
 void uart_task(void *pvParameters) {
 	uint8_t *buf;

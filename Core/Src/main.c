@@ -55,6 +55,7 @@
 #include "decode_command.h"
 #include "main_ui_page.h"
 #include "rtc.h"
+#include "config.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -79,7 +80,7 @@ void START_task(void *pvParameters);				// Task Fuction
 
 /*GPIO_TASK==========================================*/
 #define GPIO_TASK_PRIORITY   				6  		// Task Priority
-#define GPIO_TASK_STACK_SIZE 				70		// Task Stack Size
+#define GPIO_TASK_STACK_SIZE 				100		// Task Stack Size
 TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
@@ -153,7 +154,8 @@ int main(void)
 			  (void *          ) NULL,				   //Task Fuction Parameter
 			  (UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
 			  (TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
-
+  printf("Start Booting OS\r\n");
+  printf("Free Heap size = %d \r\n",xPortGetFreeHeapSize());
   vTaskStartScheduler();
   /* USER CODE END 2 */
 
@@ -453,7 +455,6 @@ static void MX_GPIO_Init(void)
 void START_task(void *pvParameters){
 	taskENTER_CRITICAL();
 	EventGroupHandler = xEventGroupCreate(); //create event group
-
 	//rotary encoder button task
 	xTaskCreate((TaskFunction_t  )(Button_task),         	//Task Function
 				(const char*     ) "Button_task",		    //Task Name
@@ -516,10 +517,14 @@ void START_task(void *pvParameters){
 void GPIO_task(void *pvParameters){
 
 	while(1){
+#if DEBUG
+		printf("Free Heap size = %d\r\n",xPortGetFreeHeapSize());
+#endif
 		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 		vTaskDelay(1000/portTICK_PERIOD_MS);
 		HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 		vTaskDelay(2000/portTICK_PERIOD_MS);
+
 	}
 
 }
@@ -538,13 +543,18 @@ void GPIO_task(void *pvParameters){
 //}
 
 void vApplicationMallocFailedHook( void ) {
-	HAL_UART_Transmit(&huart1,"Malloc failed\n",20,0xffff);
+#if DEBUG
+	printf("vApplicationMallocFailedHook: Malloc failed \n");
+#endif
 	while(1);
 }
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	HAL_UART_Transmit(&huart1,"StackOverflow: ",20,0xffff);
-	HAL_UART_Transmit(&huart1,pcTaskName,strlen(pcTaskName),0xffff);
-	HAL_UART_Transmit(&huart1,"\r\n",3,0xffff);
+#if DEBUG
+	printf("vApplicationStackOverflowHook:====================\n");
+	printf("StackOverflow: on Task = %s\n",pcTaskName);
+	printf("Suspend Task : %s\n",pcTaskName);
+#endif
+	//vTaskSuspend(xTask);
 	while(1);
 }
 /* USER CODE END 4 */
@@ -559,6 +569,10 @@ void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
+#if DEBUG
+	printf(" Error_Handler:====================================\n");
+	printf(" Error cause on %s file, line number = %d\n",file,line);
+#endif
 	while (1) {
 	}
   /* USER CODE END Error_Handler_Debug */

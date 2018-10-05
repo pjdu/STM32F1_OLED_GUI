@@ -3,6 +3,8 @@
 
 //CONFIG_FOR_COMMAND
 
+#define DEBUG  1
+
 
 #define CONFIG_COMMAND_HEADER_SIZE 	      4
 #define CONFIG_MAX_COMMAND_SIZE 		  16//256

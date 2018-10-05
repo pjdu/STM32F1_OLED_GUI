@@ -23,7 +23,8 @@ extern TaskHandle_t uartTaskHandler;
 void uart_task(void *pvParameters);
 void USART1_IRQHandler(void);
 uint8_t UART_Avaliable();
-
+void uart_putchar(int ch);
+void myprintf(char*format, ...);
 
 
 

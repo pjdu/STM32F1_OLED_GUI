@@ -53,8 +53,8 @@
 #define configCPU_CLOCK_HZ				   		 ( 72000000UL )
 #define configTICK_RATE_HZ				   		 ( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES			   		 ( 20 )
-#define configMINIMAL_STACK_SIZE		   		 ( ( unsigned short ) 70 )
-#define configTOTAL_HEAP_SIZE			   		 ( ( size_t ) ( 6 * 1024 ) ) //可供動態記憶體分配的heap size 7K
+#define configMINIMAL_STACK_SIZE		   		 ( ( unsigned short ) 100 )
+#define configTOTAL_HEAP_SIZE			   		 ( ( size_t ) ( 10 * 1024 ) ) //可供動態記憶體分配的heap size 7K
 #define configMAX_TASK_NAME_LEN			   		 ( 10 )
 #define configUSE_TRACE_FACILITY		   		 0
 #define configUSE_16_BIT_TICKS			   		 0
@@ -84,6 +84,7 @@
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
+
 #define INCLUDE_vTaskPrioritySet		1
 #define INCLUDE_uxTaskPriorityGet		1
 #define INCLUDE_vTaskDelete				1

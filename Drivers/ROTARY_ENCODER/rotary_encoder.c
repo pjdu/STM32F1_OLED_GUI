@@ -43,7 +43,7 @@ Button_state RotaryEcncorder_ButtonScan(void) {
 	else if (current_state == 0 && old_state == 0 && press_count == 1) {
 		button_state = button_long_press;
 		time_10ms++;
-		if(time_10ms == 100)
+		if(time_10ms == 100) // 10ms * 100 = 1s
 		{
 			time_10ms = 0;
 			button_state = button_long_press_1s;
