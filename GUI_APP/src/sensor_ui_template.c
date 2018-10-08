@@ -79,17 +79,20 @@ void SENSOR_UI_Task(void *pvParameters)
 		show_str_mid(SensorWindow.x, SensorWindow.y + 1, SensorWindow.title, 12,12, 0, SensorWindow.width);
 		vPortFree(SensorWindow.title);
 
-		rotatnum = rotatnum - 1;
-		data.shortaddress = getShortaddress(rotatnum);
-		data.temperature = getTemperature(rotatnum);
-		data.humidity = getHumdity(rotatnum);
-		data.co2 = getCo2(rotatnum);
-		data.voc = getVoc(rotatnum);
-		data.pm2_5 = getPM2_5(rotatnum);
-//		data.IAQMode = getIAQMode(rotatnum);
-//		data.fan1Mode = getFan1Mode(rotatnum);
-//		data.fan2Mode = getFan2Mode(rotatnum);
+		rotatnum = rotatnum - 1; // data start index :0 ,page num start index :1
 
+		// get airdata
+		data.shortaddress = airdata_get_shortaddress(rotatnum);//getShortaddress(rotatnum);
+		data.temperature = airdata_get_temperature(rotatnum);
+		data.humidity = airdata_get_humidity(rotatnum);
+		data.co2 = airdata_get_co2(rotatnum);
+		data.voc = airdata_get_voc(rotatnum);;
+		data.pm2_5 = airdata_get_pm2_5(rotatnum);
+
+
+
+
+		//安排螢幕資料顯示以及位置
 		double tmp;
 		//Temperature
 		buf = pvPortMalloc(sizeof(char) * 10);
@@ -138,6 +141,7 @@ void SENSOR_UI_Task(void *pvParameters)
 		snprintf(buf, 10, "PM25:%2.1f", tmp);
 		show_str(SensorWindow.x + 125, SensorWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
+
 		//IAQ
 //		buf = pvPortMalloc(sizeof(char) * 9);
 //		snprintf(buf, 9, "IAQ :%3f", data.IAQMode);
@@ -154,6 +158,7 @@ void SENSOR_UI_Task(void *pvParameters)
 //		show_str(SensorWindow.x + 185, SensorWindow.y + 30, buf, 12, 12, 1);
 //		vPortFree(buf);
 
+		// 更新畫面顯示
 		GUI_Refresh();
 		vTaskDelay(300/portTICK_PERIOD_MS);
 	}

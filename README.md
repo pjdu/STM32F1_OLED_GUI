@@ -1,13 +1,51 @@
-# Atolic STM32f103RCT6 OLED MENU System
+# Atolic STM32f103RCT6 OLED MENU System with FreeRTOS
 
 
-display file structure command:
+## debug print:
 
+在config.h，Debug 1 會列印出除錯列印訊息，0則關閉
+
+## airdata_api:
+ 
+```c
+	
+	void airdata_set_shortaddress(uint16_t data, int device_number);
+	uint16_t airdata_get_shortaddress(int device_number);
+	
+	void airdata_set_temperature(uint16_t data, int device_number);
+	uint16_t airdata_get_temperature(int device_number);
+	
+	void airdata_set_humidity(uint16_t data, int device_number);
+	uint16_t airdata_get_humidity(int device_number);
+	
+	void airdata_set_voc(uint16_t data, int device_number);
+	uint16_t airdata_get_voc(int device_number);
+	
+	void airdata_set_co2(uint16_t data, int device_number);
+	uint16_t airdata_get_co2(int device_number);
+	
+	void airdata_set_pm2_5(uint16_t data, int device_number);
+	uint16_t airdata_get_pm2_5(int device_number);
+	
+	
 ```
 
- tree -P '*.c|*.h' -I 'Debug|Drivers|startup|Core' > tree.txt
 
+## printf Usage:
+```c
+	
+	//license on header of printf-stdarg.c
+	//"in the 3rd party format-string %d %x %u %s %c is supported ,but %f is not support on printf sprintf" 
+	// printf %f alternative solution 
+	
+	char *buf;
+	buf = pvPortMalloc(100);
+	snprintf(buf,"%f",1.23); //comment snprintf from printf-stdarg.c and change to use stdlib provide 
+	printf("%s",buf);
+	
+	
 ```
+
 ## Event  wait exmple:
 
 ```c
@@ -40,48 +78,62 @@ can wathch Drives/ROTARY_ENCODER/rotary_encoder.c
 
 ## File Structure(important)
 
+display file structure command:
+
+```
+	 # -P -> source file pattern want to add
+	 # -I -> source file pattern want to ingnore 
+
+	 tree -P '*.c' -I 'Debug|STM32F1xx_HAL_Driver|CMSIS|startup|FreeRTOS' > tree.txt
+
 ```
 
-|-- Command
-|   |-- src
-|       |-- get_command.c        # analysis command from uart 
-|       `-- my_system_fun.c      # checksum for intel hex format
-|-- FreeRTOS                     # FreeRTOS Source file
-|   |-- croutine.c
-|   |-- event_groups.c
-|   |-- include
-|   |-- list.c
-|   |-- portable
-|   |   |-- GCC
-|   |   |   `-- ARM_CM3
-|   |   |       `-- port.c
-|   |   `-- MemMang
-|   |       `-- heap_4.c
-|   |-- queue.c
-|   |-- stream_buffer.c
-|   |-- tasks.c
-|   `-- timers.c
-|-- GUI_APP                      # all gui app task 
-|   |-- src
-|       |-- air_data.c           #(only data format none ui and task)
-|       |-- decode_command.c     #decode_commad task  
-|       |-- iwdgtask.c           #indepent watch dog task 
-|       |-- main_ui_page.c       #main ui page task  
-|       |-- menuL1_item.c        #menu ui item
-|       |-- menu_ui.c            #menu ui task 
-|       |-- rand_task.c          #(x)
-|       |-- rtc_ui.c             #time setting ui
-|       `-- sensor_ui_template.c #sensor state display task 
-`-- GUI_Driver                   # lcd gui driver 
-    |-- src
-        |-- button.c
-        |-- font.c
-        |-- gui_basic.c
-        |-- gui_menu.c
-        |-- lcmdrv.c
-        |-- messagebox.c
-        |-- scrollbar.c
-        |-- text.c
-        `-- windows.c
-        
+```
+
+	.
+	|-- Command
+	|   |-- inc
+	|   `-- src
+	|       |-- get_command.c 	  // analysis command and command store 
+	|       `-- my_system_fun.c	// checksum for intel hex format
+	|-- Core
+	|   |-- Inc
+	|   `-- Src
+	|       |-- main.c
+	|       |-- stm32f1xx_hal_msp.c
+	|       |-- stm32f1xx_it.c
+	|       `-- system_stm32f1xx.c
+	|-- Drivers    
+	|   |-- OLED
+	|   |   `-- SSD1322.c     	 	//SSD1322 OLED Driver
+	|   |-- ROTARY_ENCODER
+	|   |   `-- rotary_encoder.c		//Rotary_Encoder rotate and button press driver
+	|   |-- RTC
+	|   |   `-- rtc.c					// rtc driver add datetime convert 
+	|   `-- UART
+	|       |-- printf-stdarg.c 		// redirect printf  to uart  
+	|       `-- uart.c				// uart driver 
+	|-- GUI_APP                      
+	|   |-- src
+	|       |-- air_data.c           //(only data format and api  none ui and task)
+	|       |-- decode_command.c     //decode_commad task  
+	|       |-- iwdgtask.c           //indepent watch dog task 
+	|       |-- main_ui_page.c       //main ui page task  
+	|       |-- menuL1_item.c        //menu ui item
+	|       |-- menu_ui.c            //menu ui task 
+	|       |-- rand_task.c          //(x) no use this is test task
+	|       |-- rtc_ui.c             //time setting ui
+	|       `-- sensor_ui_template.c //sensor state display task 
+	`-- GUI_Driver
+	    |-- inc
+	    `-- src
+	        |-- button.c
+	        |-- font.c
+	        |-- gui_basic.c
+	        |-- gui_menu.c
+	        |-- lcmdrv.c
+	        |-- messagebox.c
+	        |-- scrollbar.c
+	        |-- text.c
+	        `-- windows.c       
 ```

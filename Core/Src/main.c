@@ -154,8 +154,6 @@ int main(void)
 			  (void *          ) NULL,				   //Task Fuction Parameter
 			  (UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
 			  (TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
-  printf("Start Booting OS\r\n");
-  printf("Free Heap size = %d \r\n",xPortGetFreeHeapSize());
   vTaskStartScheduler();
   /* USER CODE END 2 */
 

@@ -28,39 +28,14 @@ void decode_command_task()
 				setNumberofDevice(device_number,0);
 				break;
 			case CMD_DEV_MSG:
-
 				memcpy(&msg_temp, read_temp_ptr + CMD_START_DATA,CONFIG_MSG_DATA_SIZE);
-				tmp = msg_temp.ShortAddress[0];
-				tmp = (tmp << 8) + msg_temp.ShortAddress[1];
-				msg_temp.shortaddress = tmp;
 
-				tmp = msg_temp.Temperature[0];
-				tmp = (tmp << 8) + msg_temp.Temperature[1];
-				msg_temp.temperature = tmp;
-
-
-				tmp = msg_temp.Humidity[0];
-				tmp = (tmp << 8) + msg_temp.Humidity[1];
-				msg_temp.humidity = tmp;
-
-				tmp = msg_temp.VOC[0];
-				tmp = (tmp << 8) + msg_temp.VOC[1];
-				msg_temp.voc = tmp;
-
-				tmp = msg_temp.CO2[0];
-				tmp = (tmp << 8) + msg_temp.CO2[1];
-				msg_temp.co2 = tmp;
-
-				tmp = msg_temp.PM2_5[0];
-				tmp = (tmp << 8) + msg_temp.PM2_5[1];
-				msg_temp.pm2_5 = tmp;
-
-				setShortaddress(msg_temp.shortaddress, index);
-				setTemperature(msg_temp.temperature ,index);
-				setHumdity(msg_temp.humidity ,index);
-				setCo2(msg_temp.co2,index);
-				setVoc(msg_temp.voc ,index);
-				setPM2_5(msg_temp.pm2_5,index);
+				airdata_set_shortaddress(msg_temp.shortaddress, index);
+				airdata_set_temperature(msg_temp.temperature, index);
+				airdata_set_humidity(msg_temp.humidity, index);
+				airdata_set_co2(msg_temp.co2, index);
+				airdata_set_voc(msg_temp.voc, index);
+				airdata_set_pm2_5(msg_temp.pm2_5, index);
 
 				index++;
 				if(index > device_number-1)index = 0;

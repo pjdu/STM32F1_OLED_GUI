@@ -14,38 +14,40 @@
 //}air_data_packet;
 
 
-typedef struct{
-		union{
-			uint16_t shortaddress;
-			uint8_t ShortAddress[2];
-		};
+typedef struct {
 
-		union{
-			  uint16_t temperature;
-			  uint8_t  Temperature[2];
-		};
-		union{
-			uint16_t  humidity;
-			uint8_t   Humidity[2];
-		};
+	union {
+		uint16_t shortaddress;
+		uint8_t ShortAddress[2];
+	};
 
-		union{
-		    uint16_t  voc;
-			uint8_t   VOC[2];
-		};
-		union{
-			uint16_t  co2;
-			uint8_t   CO2[2];
-		};
-		union{
-		    uint16_t  pm2_5;
-			uint8_t   PM2_5[2];
-		};
-		uint16_t				  numberofDevice;
-		uint16_t                  fan1Mode;
-		uint16_t                  fan2Mode;
-		uint16_t                  IAQMode;
-}Device_Msg;
+	union {
+		uint16_t temperature;
+		uint8_t Temperature[2];
+	};
+	union {
+		uint16_t humidity;
+		uint8_t Humidity[2];
+	};
+
+	union {
+		uint16_t voc;
+		uint8_t VOC[2];
+	};
+	union {
+		uint16_t co2;
+		uint8_t CO2[2];
+	};
+	union {
+		uint16_t pm2_5;
+		uint8_t PM2_5[2];
+	};
+
+	uint16_t numberofDevice;
+//	uint16_t fan1Mode;
+//	uint16_t fan2Mode;
+//	uint16_t IAQMode;
+} Device_Msg;
 
 
 enum {
@@ -60,25 +62,34 @@ enum{
 	CMD_DEV_MSG	 = 0x03,
 };
 
-void setNumberofDevice(uint16_t num, int device_number);
-void setShortaddress(uint16_t shortaddress , int device_number);
-void setTemperature(uint16_t temperature, int device_number);
-void setHumdity(uint16_t humidity, int device_number);
-void setCo2(uint16_t co2, int device_number);
-void setVoc(uint16_t voc, int device_number);
-void setPM2_5(uint16_t pm2_5, int device_number);
-void setFan1Mode(uint16_t fan1Mode, int device_number);
-void setFan2Mode(uint16_t fan2Mode, int device_number);
-void setIAQMode(uint16_t IAQMode, int device_number);
 
+#define AIR_DECLARE_SET_MEMBER_FUNC_DEF(member) \
+    void airdata_set_##member(uint16_t data, int device_number);
+
+#define AIR_DECLARE_GET_MEMBER_FUNC_DEF(member) \
+		uint16_t airdata_get_##member(int device_number);
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(shortaddress)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(shortaddress)
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(temperature)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(temperature)
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(humidity)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(humidity)
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(voc)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(voc)
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(co2)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(co2)
+
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(pm2_5)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(pm2_5)
+
+
+void setNumberofDevice(uint16_t num, int device_number);
 uint16_t getNumberofDevice(int device_number);
-uint16_t getTemperature(int device_number);
-uint16_t getHumdity(int device_number);
-uint16_t getCo2(int device_number);
-uint16_t getVoc(int device_number);
-uint16_t getPM2_5(int device_number);
-uint16_t getFan1Mode(int device_number);
-uint16_t getFan2Mode(int device_number);
-uint16_t getIAQMode(int device_number);
+
 
 #endif

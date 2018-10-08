@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "config.h"
 extern UART_HandleTypeDef huart1;
 extern uint8_t aRxBuffer;
 

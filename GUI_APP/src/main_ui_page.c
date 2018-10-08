@@ -60,11 +60,11 @@ void main_ui_task(void *pvparameter)
 
 			for(int i = 0 ; i< data.numberofDevice; i ++)
 			{
-				data.temperature += getTemperature(i);
-				data.humidity += getHumdity(i);
-				data.co2 += getCo2(i);
-				data.voc += getVoc(i);
-				data.pm2_5 += getPM2_5(i);
+				data.temperature += airdata_get_temperature(i);
+				data.humidity += airdata_get_humidity(i);
+				data.co2 += airdata_get_co2(i);
+				data.voc += airdata_get_voc(i);
+				data.pm2_5 += airdata_get_pm2_5(i);
 			}
 		}
 
