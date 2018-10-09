@@ -8,6 +8,6 @@ void getCOMMANDInitial(void);
 uint8_t* readCOMMANDData(void);
 uint8_t analysisCOMMAND(uint8_t* ptrdata, uint16_t datasize);
 
-extern volatile uint8_t commandBufferRxCount;
-
+//extern volatile uint8_t commandBufferRxCount;
+uint8_t getCurrentCommandNum(void);
 #endif

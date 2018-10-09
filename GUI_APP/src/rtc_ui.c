@@ -7,9 +7,6 @@
 #include "config.h"
 static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
-
-RTC_TimeTypeDef rtcTime;
-RTC_DateTypeDef rtcDate;
 static char *time;
 static RTC_Mode rtcmode = RTC_Mode_Normal;
 TaskHandle_t RTCUITaskHandler;
@@ -51,23 +48,23 @@ void RTCUI_Task(void *pvParameters)
 					//刪除RTC UI 任務
 					vTaskDelete(RTCUITaskHandler);
 					break;
-				case NULL_EVENT_RAISE:
-					rstate = RotaryEcncorder_GetState();
-					if(rstate == state_no_changed){
-						time3s_counter++;
-						//沒有任何按鈕事件且無旋轉持續3秒
-						if(time3s_counter >= 30){
-							// 30 * 100ms = 3s
-							xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
-										(const char*     ) "main task",		      		//Task Name
-										(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
-										(void *          ) NULL,				    	//Task Fuction Parameter
-										(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
-										(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
-							vTaskDelete(RTCUITaskHandler);
-						}
-					}
-					break;
+//				case NULL_EVENT_RAISE:
+//					rstate = RotaryEcncorder_GetState();
+//					if(rstate == state_no_changed){
+//						time3s_counter++;
+//						//沒有任何按鈕事件且無旋轉持續3秒
+//						if(time3s_counter >= 30){
+//							// 30 * 100ms = 3s
+//							xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
+//										(const char*     ) "main task",		      		//Task Name
+//										(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
+//										(void *          ) NULL,				    	//Task Fuction Parameter
+//										(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
+//										(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+//							vTaskDelete(RTCUITaskHandler);
+//						}
+//					}
+//					break;
 			}
 		}
 		//RTC 模式切換與設定處理
@@ -86,19 +83,6 @@ void RTCUI_Task(void *pvParameters)
 				snprintf(time, 12, "%4d/%2d/%2d/", calendar.w_year,calendar.w_month, calendar.w_date);
 				show_str_mid(RTCWindow.x, RTCWindow.y + 15, time, 12, 12, 1,RTCWindow.width);
 				vPortFree(time);
-
-//				if(HAL_RTC_GetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN) == HAL_OK){
-//					time = pvPortMalloc(sizeof(char) * 9);
-//					snprintf(time,9,"%2d:%2d:%2d",rtcTime.Hours,rtcTime.Minutes,rtcTime.Seconds);
-//					show_str_mid(RTCWindow.x, RTCWindow.y+30, time,12,12,1,RTCWindow.width);
-//					vPortFree(time);
-//				}
-//				if(HAL_RTC_GetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN) == HAL_OK){
-//					time = pvPortMalloc(sizeof(char) * 11);
-//					snprintf(time,12,"%4d/%2d/%2d/",rtcDate.Year+2000,rtcDate.Month,rtcDate.Date);
-//					show_str_mid(RTCWindow.x, RTCWindow.y+15, time,12,12,1,RTCWindow.width);
-//					vPortFree(time);
-//				}
 				break;
 			case RTC_Mode_Setting_Year:
 				RotaryEcncorder_SetRange(18,50);
@@ -158,8 +142,6 @@ void RTCUI_Task(void *pvParameters)
 				show_str(140, 30, time,12,12,0);
 				vPortFree(time);
 				//update RTC Date and Time Setting
-//				HAL_RTC_SetTime(&hrtc,&rtcTime,RTC_FORMAT_BIN);
-//				HAL_RTC_SetDate(&hrtc,&rtcDate,RTC_FORMAT_BIN);
 				RTC_Set(tmp_calendar.w_year,tmp_calendar.w_month,tmp_calendar.w_date,tmp_calendar.hour,tmp_calendar.min,tmp_calendar.sec);
 				break;
 		}

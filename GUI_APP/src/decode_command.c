@@ -3,24 +3,27 @@
 
 //static uint8_t cmd_temp[HEADER_SIZE + MAX_DEVICE_SIZE *2]; //
 //static uint8_t msg_temp[MAX_MSG_SIZE]; //
-int device_number;
 
-
-Device_Msg  msg_temp;
 
 TaskHandle_t decodeTaskHandler;
 
 void decode_command_task()
 {
+	int device_number;
+	Device_Msg  msg_temp;
 	uint8_t *read_temp_ptr;
 	uint8_t adu_len;
 	int index = 0;
 	uint16_t tmp;
+	uint32_t commandlen;
 	while(1){
-		while(commandBufferRxCount > 0) {
+
+		//接收通知，返回值為command的數量
+		commandlen = ulTaskNotifyTake(pdTRUE, 	/*接收完通知時，將通知值清零*/
+									  0       );/*沒收到通知,不花時間等待＝花0個tick時間等待*/
+		while(commandlen > 0) {
 			read_temp_ptr = readCOMMANDData();
 			adu_len = *(read_temp_ptr + CMD_ADU_LEN);
-//			memcpy(cmd_temp, read_temp_ptr, adu_len);
 			switch (*(read_temp_ptr + CMD_FC)) {
 			case CMD_DEV_LIST:
 				index = 0;
@@ -44,6 +47,7 @@ void decode_command_task()
 			default:
 				break;
 			}
+			commandlen--;
 		}
 		vTaskDelay(300/portTICK_PERIOD_MS);
 	}

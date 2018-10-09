@@ -8,7 +8,12 @@ static uint8_t sequenceHead;
 static uint8_t sequenceTail;
 static uint8_t sequence_command[CONFIG_SEQ_COMMAND_BUFFER_SIZE][CONFIG_MAX_COMMAND_SIZE];
 
-volatile uint8_t commandBufferRxCount;
+static volatile uint8_t commandBufferRxCount;
+
+uint8_t getCurrentCommandNum(void)
+{
+	return commandBufferRxCount;
+}
 
 void getCOMMANDInitial(void)
 {

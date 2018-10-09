@@ -1,4 +1,5 @@
 #include "uart.h"
+#include "decode_command.h"
 #include "get_command.h"
 #include "air_data.h"
 
@@ -102,7 +103,7 @@ void uart_task(void *pvParameters) {
 	uint8_t *buf;
 	uint8_t len;
 	int index;
-
+	uint32_t commandlen;
 
 	UART_Receieve_Init();
 	while (1) {
@@ -114,6 +115,15 @@ void uart_task(void *pvParameters) {
 			}
 			analysisCOMMAND(buf, len);
 			vPortFree(buf);
+		}
+		commandlen = getCurrentCommandNum();
+		if(commandlen > 0)
+		{
+			//發送通知，內容為command的數量
+			xTaskNotify(decodeTaskHandler,		//要通知的任務
+						commandlen,				//要通知的數值
+						eSetValueWithOverwrite //覆寫每次的通知數值
+					);
 		}
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}

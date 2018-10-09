@@ -12,8 +12,6 @@
 
 
 
-extern int device_number;
-
 extern TaskHandle_t decodeTaskHandler;
 
 #define DECODE_TASK_PRIORITY   				5  	 // Task Priority
