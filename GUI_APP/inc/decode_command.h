@@ -14,8 +14,9 @@
 
 extern TaskHandle_t decodeTaskHandler;
 
-#define DECODE_TASK_PRIORITY   				5  	 // Task Priority
-#define DECODE_TASK_STACK_SIZE 				128	// Task Stack Size
+#define DECODE_TASK_PRIORITY   	CONFIG_DECODE_TASK_PRIORITY  	 // Task Priority
+#define DECODE_TASK_STACK_SIZE 	CONFIG_DECODE_TASK_STACK_SIZE	// Task Stack Size
+
 void decode_command_task();
 
 #endif

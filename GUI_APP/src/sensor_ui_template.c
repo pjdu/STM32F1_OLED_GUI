@@ -19,7 +19,7 @@ static Device_Msg data;
 
 void SENSOR_UI_Task(void *pvParameters)
 {
-	int32_t rotatnum = 0;
+	int rotatnum = 0;
 	int time3s_counter = 0 ;
 	Rotary_state rstate = state_no_changed;
 
@@ -48,7 +48,7 @@ void SENSOR_UI_Task(void *pvParameters)
 								(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 								(void *          ) NULL,				    //Task Fuction Parameter
 								(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-								(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+								(TaskHandle_t*    ) &MenuTaskHandler);	    //Task Handler
 					//刪除Sensor UI 任務
 					vTaskDelete(SensorUITaskHandler);
 					break;
@@ -63,7 +63,7 @@ void SENSOR_UI_Task(void *pvParameters)
 									(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
 									(void *          ) NULL,				    	//Task Fuction Parameter
 									(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
-									(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+									(TaskHandle_t*    ) &mainUITaskHandler);	    	//Task Handler
 						vTaskDelete(SensorUITaskHandler);
 						}
 					}

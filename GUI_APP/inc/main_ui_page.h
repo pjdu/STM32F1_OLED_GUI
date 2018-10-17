@@ -9,12 +9,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "string.h"
-
+#include "config.h"
 
 
 /*Menu_Task==========================================*/
-#define MAIN_UI_PAGE_TASK_PRIORITY   		2  		// Task Priority
-#define MAIN_UI_PAGE_TASK_STACK_SIZE 		256		// Task Stack Size
+
+#define MAIN_UI_PAGE_TASK_PRIORITY   		CONFIG_MAIN_UI_PAGE_TASK_PRIORITY  		// Task Priority
+#define MAIN_UI_PAGE_TASK_STACK_SIZE 		CONFIG_MAIN_UI_PAGE_TASK_STACK_SIZE		// Task Stack Size
 extern TaskHandle_t mainUITaskHandler;				// Task Handler
 
 

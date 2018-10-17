@@ -7,16 +7,17 @@
 #include "config.h"
 static WINDOWS RTCWindow = { .x = 0, .y = 0, .width = 256, .height = 64,
 		.itemsperpage = 3, .topitem = 0, .title = "Time Setting"};
-static char *time;
+static uint8_t *time;
 static RTC_Mode rtcmode = RTC_Mode_Normal;
 TaskHandle_t RTCUITaskHandler;
 static EventBits_t val = 0;
 void RTCUI_Task(void *pvParameters)
 {
 	int  button_press_count = 0;
-	int time3s_counter = 0 ;
+	//int time3s_counter = 0 ;
+	//	Rotary_state rstate = state_no_changed;
 	_calendar_obj tmp_calendar;
-	Rotary_state rstate = state_no_changed;
+
 	GUI_ClearSCR();
 	GUI_WindowsDraw(&RTCWindow);
 	while(1)
@@ -34,7 +35,7 @@ void RTCUI_Task(void *pvParameters)
 				case BUTTON_PRESS_EVENT:
 					button_press_count++;
 					button_press_count %=7;
-					time3s_counter = 0;
+					//time3s_counter = 0;
 					break;
 				case BUTTON_PRESS_1S_EVENT:
 					GUI_ClearSCR();
@@ -44,7 +45,7 @@ void RTCUI_Task(void *pvParameters)
 								(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 								(void *          ) NULL,				    //Task Fuction Parameter
 								(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-								(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+								(TaskHandle_t*    ) &MenuTaskHandler);	    //Task Handler
 					//刪除RTC UI 任務
 					vTaskDelete(RTCUITaskHandler);
 					break;
@@ -86,7 +87,7 @@ void RTCUI_Task(void *pvParameters)
 				break;
 			case RTC_Mode_Setting_Year:
 				RotaryEcncorder_SetRange(18,50);
-				int32_t year = RotaryEcncorder_GetCount();
+				int year = RotaryEcncorder_GetCount();
 				tmp_calendar.w_year = year+2000;
 				time = pvPortMalloc(sizeof(char) * 3);
 				snprintf(time,3,"%2d",year);

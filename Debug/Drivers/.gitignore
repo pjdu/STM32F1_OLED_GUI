@@ -4,3 +4,8 @@
 /OLED/
 /RTC/
 /FLASH/
+/EEPROM/
+/IIC/
+/sys/
+/24CXX/
+/DELAY/

@@ -23,8 +23,8 @@ const char* mainMenuLanguage[MAIN_MENU_ITEMNUM]={
 "1.Time Setting",
 "2.Sensor 1 State",
 "3.return to Main",
-"4.Sensor 3 State",
-"5.return to Main",
+//"4.Sensor 3 State",
+//"5.return to Main",
 };
 static void gotoMainUIPage(void){
 	exitMenu();
@@ -33,7 +33,7 @@ static void gotoMainUIPage(void){
 				(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
 				(void *          ) NULL,				    	//Task Fuction Parameter
 				(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
-				(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+				(TaskHandle_t*    ) &mainUITaskHandler);	    	//Task Handler
 	vTaskDelete(MenuTaskHandler);
 }
 static void gotoTimeSettingUI(void)
@@ -44,7 +44,7 @@ static void gotoTimeSettingUI(void)
 				(uint16_t        ) RTCUI_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) RTCUI_TASK_PRIORITY, 	//Task Priority
-				(TaskHandle_t    ) &RTCUITaskHandler);	    //Task Handler
+				(TaskHandle_t*    ) &RTCUITaskHandler);	    //Task Handler
 
 	vTaskDelete(MenuTaskHandler);
 }
@@ -54,10 +54,10 @@ static void gotoSensorUI(void)
 	exitMenu();
 	xTaskCreate((TaskFunction_t  )(SENSOR_UI_Task),         	//Task Function
 				(const char*     ) "SENSOR_UI_Task",		    //Task Name
-				(uint16_t        ) SENSOR_UI_Task_STACK_SIZE, 	//Task Stack Size
+				(uint16_t        ) SENSOR_UI_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,						//Task Fuction Parameter
-				(UBaseType_t     ) SENSOR_UI_Task_PRIORITY, 	//Task Priority
-				(TaskHandle_t    ) &SensorUITaskHandler);	    //Task Handler
+				(UBaseType_t     ) SENSOR_UI_TASK_PRIORITY, 	//Task Priority
+				(TaskHandle_t*    ) &SensorUITaskHandler);	    //Task Handler
 	vTaskDelete(MenuTaskHandler);
 }
 

@@ -55,7 +55,10 @@
 #include "decode_command.h"
 #include "main_ui_page.h"
 #include "rtc.h"
+#include "delay.h"
+#include "24cxx.h"
 #include "config.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -72,15 +75,15 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 /*START_TASK==========================================*/
-#define START_TASK_PRIORITY   				1  		// Task Priority
-#define START_TASK_STACK_SIZE 				128		// Task Stack Size
+#define START_TASK_PRIORITY   				CONFIG_START_TASK_PRIORITY  		// Task Priority
+#define START_TASK_STACK_SIZE 				CONFIG_START_TASK_STACK_SIZE		// Task Stack Size
 TaskHandle_t StartTaskHandler;						// Task Handler
 void START_task(void *pvParameters);				// Task Fuction
 
 
 /*GPIO_TASK==========================================*/
-#define GPIO_TASK_PRIORITY   				6  		// Task Priority
-#define GPIO_TASK_STACK_SIZE 				100		// Task Stack Size
+#define GPIO_TASK_PRIORITY   				CONFIG_GPIO_TASK_PRIORITY  		// Task Priority
+#define GPIO_TASK_STACK_SIZE 				CONFIG_GPIO_TASK_STACK_SIZE		// Task Stack Size
 TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
@@ -145,6 +148,10 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
+  DWT_Delay_Init();
+ // AT24CXX_Init();
+ // AT24CXX_Check();
   MY_RTC_Init();
   OLED_Init();
   mainMenuInit();
@@ -153,7 +160,7 @@ int main(void)
 			  (uint16_t        ) START_TASK_STACK_SIZE,  //Task Stack Size
 			  (void *          ) NULL,				   //Task Fuction Parameter
 			  (UBaseType_t     ) START_TASK_PRIORITY,    //Task Priority
-			  (TaskHandle_t    ) &StartTaskHandler);	   //Task Handler
+			  (TaskHandle_t*    ) &StartTaskHandler);	   //Task Handler
   vTaskStartScheduler();
   /* USER CODE END 2 */
 
@@ -412,6 +419,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, I2C_SDL_Pin|I2C_SDA_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : LED1_Pin LED2_Pin */
   GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -432,12 +442,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(SPI_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : OLED_RST_Pin */
-  GPIO_InitStruct.Pin = OLED_RST_Pin;
+  /*Configure GPIO pins : OLED_RST_Pin I2C_SDL_Pin I2C_SDA_Pin */
+  GPIO_InitStruct.Pin = OLED_RST_Pin|I2C_SDL_Pin|I2C_SDA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(OLED_RST_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : OLED_DC_Pin */
   GPIO_InitStruct.Pin = OLED_DC_Pin;
@@ -456,24 +466,24 @@ void START_task(void *pvParameters){
 	//rotary encoder button task
 	xTaskCreate((TaskFunction_t  )(Button_task),         	//Task Function
 				(const char*     ) "Button_task",		    //Task Name
-				(uint16_t        ) Button_task_STACK_SIZE, 	//Task Stack Size
+				(uint16_t        ) BUTTON_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
-				(UBaseType_t     ) Button_task_PRIORITY, 	//Task Priority
-				(TaskHandle_t    ) &ButtonTaskHandler);	    //Task Handler
+				(UBaseType_t     ) BUTTON_TASK_PRIORITY, 	//Task Priority
+				(TaskHandle_t*    ) &ButtonTaskHandler);	    //Task Handler
 	//MAIN UI task
 	xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
 				(const char*     ) "main task",		      	//Task Name
 				(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &mainUITaskHandler);	    //Task Handler
+				(TaskHandle_t*    ) &mainUITaskHandler);	    //Task Handler
 	//uart task
 	xTaskCreate((TaskFunction_t  )(uart_task),              //Task Function
 				(const char*     ) "uart_task",		      	//Task Name
 				(uint16_t        ) UART_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,			        //Task Fuction Parameter
 				(UBaseType_t     ) UART_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &uartTaskHandler);	    //Task Handler
+				(TaskHandle_t*    ) &uartTaskHandler);	    //Task Handler
 
 	//decode command task
 	xTaskCreate((TaskFunction_t  )(decode_command_task),    //Task Function
@@ -481,7 +491,7 @@ void START_task(void *pvParameters){
 				(uint16_t        ) DECODE_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) DECODE_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &decodeTaskHandler);	    //Task Handler
+				(TaskHandle_t*    ) &decodeTaskHandler);	    //Task Handler
 
 	//gpio blink task
 	xTaskCreate((TaskFunction_t  )(GPIO_task),         	  	//Task Function
@@ -489,7 +499,7 @@ void START_task(void *pvParameters){
 				(uint16_t        ) GPIO_TASK_STACK_SIZE, 	//Task Stack Size
 				(void *          ) NULL,				    //Task Fuction Parameter
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
-				(TaskHandle_t    ) &GPIOTaskHandler);	    //Task Handler
+				(TaskHandle_t*    ) &GPIOTaskHandler);	    //Task Handler
 
 	//rand data genreate task
 //	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
@@ -501,19 +511,18 @@ void START_task(void *pvParameters){
 
 
 
-//	//independent watch dog task
-//	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
-//				(const char*     ) "iwdg_Task",		      	//Task Name
-//				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
-//				(void *          ) NULL,				    //Task Fuction Parameter
-//				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
-//				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
+	//independent watch dog task
+	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
+				(const char*     ) "iwdg_Task",		      	//Task Name
+				(uint16_t        ) IWDG_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
 
 	vTaskDelete(StartTaskHandler);
 	taskEXIT_CRITICAL();
 }
 void GPIO_task(void *pvParameters){
-
 	while(1){
 #if DEBUG
 		printf("Free Heap size = %d\r\n",xPortGetFreeHeapSize());

@@ -6,9 +6,7 @@ static Device_Msg dev_array[CONFIG_MAX_DEVICE_SIZE];
 
 #define AIR_DECLARE_SET_MEMBER_FUNC(member) \
     void airdata_set_##member(uint16_t data, int device_number){ \
-    uint16_t tmp; \
-    tmp = data & 0x00ff; \
-    tmp = (tmp << 8) | ((data >> 8) & 0x00ff); \
+    uint16_t tmp = data; \
     dev_array[device_number].member = tmp;} \
 
 #define AIR_DECLARE_GET_MEMBER_FUNC(member) \

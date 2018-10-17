@@ -185,7 +185,7 @@ void Menu_Task(void *pvParameters) {
 										(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
 										(void *          ) NULL,				    	//Task Fuction Parameter
 										(UBaseType_t     ) MAIN_UI_PAGE_TASK_PRIORITY, 	//Task Priority
-										(TaskHandle_t    ) &mainUITaskHandler);	    	//Task Handler
+										(TaskHandle_t*    ) &mainUITaskHandler);	    	//Task Handler
 							vTaskDelete(MenuTaskHandler);
 						}
 						break;

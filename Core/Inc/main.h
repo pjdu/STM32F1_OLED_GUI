@@ -65,6 +65,10 @@
 #define OLED_RST_GPIO_Port GPIOB
 #define OLED_DC_Pin GPIO_PIN_6
 #define OLED_DC_GPIO_Port GPIOC
+#define I2C_SDL_Pin GPIO_PIN_6
+#define I2C_SDL_GPIO_Port GPIOB
+#define I2C_SDA_Pin GPIO_PIN_7
+#define I2C_SDA_GPIO_Port GPIOB
 
 /* ########################## Assert Selection ############################## */
 /**

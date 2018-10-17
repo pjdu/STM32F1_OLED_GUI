@@ -17,32 +17,36 @@
 typedef struct {
 
 	union {
-		uint16_t shortaddress;
 		uint8_t ShortAddress[2];
+		uint16_t shortaddress;
 	};
+	union {
+		uint8_t all_data[10];
+		struct {
+			union {
+				uint8_t Temperature[2];
+				uint16_t temperature;
+			};
+			union {
+				uint8_t Humidity[2];
+				uint16_t humidity;
 
-	union {
-		uint16_t temperature;
-		uint8_t Temperature[2];
-	};
-	union {
-		uint16_t humidity;
-		uint8_t Humidity[2];
-	};
+			};
 
-	union {
-		uint16_t voc;
-		uint8_t VOC[2];
+			union {
+				uint8_t VOC[2];
+				uint16_t voc;
+			};
+			union {
+				uint8_t CO2[2];
+				uint16_t co2;
+			};
+			union {
+				uint8_t PM2_5[2];
+				uint16_t pm2_5;
+			};
+		};
 	};
-	union {
-		uint16_t co2;
-		uint8_t CO2[2];
-	};
-	union {
-		uint16_t pm2_5;
-		uint8_t PM2_5[2];
-	};
-
 	uint16_t numberofDevice;
 //	uint16_t fan1Mode;
 //	uint16_t fan2Mode;

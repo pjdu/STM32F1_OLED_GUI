@@ -18,8 +18,8 @@ extern uint8_t aRxBuffer;
 
 extern TaskHandle_t uartTaskHandler;
 
-#define UART_TASK_PRIORITY   				4  	 // Task Priority
-#define UART_TASK_STACK_SIZE 				128	// Task Stack Size
+#define UART_TASK_PRIORITY   				CONFIG_UART_TASK_PRIORITY  	 // Task Priority
+#define UART_TASK_STACK_SIZE 				CONFIG_UART_TASK_STACK_SIZE	// Task Stack Size
 
 void uart_task(void *pvParameters);
 void USART1_IRQHandler(void);

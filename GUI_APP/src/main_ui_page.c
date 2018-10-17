@@ -39,7 +39,7 @@ void main_ui_task(void *pvparameter)
 								(uint16_t        ) MENU_TASK_STACK_SIZE, 	//Task Stack Size
 								(void *          ) NULL,				    //Task Fuction Parameter
 								(UBaseType_t     ) MENU_TASK_PRIORITY, 		//Task Priority
-								(TaskHandle_t    ) &MenuTaskHandler);	    //Task Handler
+								(TaskHandle_t*    ) &MenuTaskHandler);	    //Task Handler
 					//刪除RTC UI 任務
 					vTaskDelete(mainUITaskHandler);
 					break;

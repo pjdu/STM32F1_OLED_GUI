@@ -14,7 +14,6 @@ void decode_command_task()
 	uint8_t *read_temp_ptr;
 	uint8_t adu_len;
 	int index = 0;
-	uint16_t tmp;
 	uint32_t commandlen;
 	while(1){
 
@@ -31,7 +30,7 @@ void decode_command_task()
 				setNumberofDevice(device_number,0);
 				break;
 			case CMD_DEV_MSG:
-				memcpy(&msg_temp, read_temp_ptr + CMD_START_DATA,CONFIG_MSG_DATA_SIZE);
+				memcpy(msg_temp.ShortAddress, read_temp_ptr + CMD_START_DATA,CONFIG_MSG_DATA_SIZE);
 
 				airdata_set_shortaddress(msg_temp.shortaddress, index);
 				airdata_set_temperature(msg_temp.temperature, index);

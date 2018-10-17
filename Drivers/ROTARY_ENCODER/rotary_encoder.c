@@ -2,7 +2,7 @@
 #include "config.h"
 //rotary Encoder rotate var
 static int32_t current_count = 0, last_count = 0,range_max = 32767,range_min = 0;
-static time_10ms;
+static int time_10ms;
 
 //rotary Encoder sw var
 static int old_state = 1, current_state = 1, press_count = 0;

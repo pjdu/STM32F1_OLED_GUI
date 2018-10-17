@@ -11,8 +11,8 @@
 #include "string.h"
 #include "menu_ui.h"
 
-#define SENSOR_UI_Task_PRIORITY   				3  		// Task Priority
-#define SENSOR_UI_Task_STACK_SIZE 				256		// Task Stack Size
+#define SENSOR_UI_TASK_PRIORITY   				CONFIG_SENSOR_UI_TASK_PRIORITY 		// Task Priority
+#define SENSOR_UI_TASK_STACK_SIZE 				CONFIG_SENSOR_UI_TASK_STACK_SIZE	// Task Stack Size
 
 extern EventGroupHandle_t EventGroupHandler;
 extern TaskHandle_t SensorUITaskHandler;						// Task Handler

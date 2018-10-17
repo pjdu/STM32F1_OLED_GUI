@@ -12,7 +12,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "event_groups.h"
-
+#include "config.h"
 extern TIM_HandleTypeDef htim2;
 extern EventGroupHandle_t EventGroupHandler;
 
@@ -32,8 +32,8 @@ typedef enum{
 }Rotary_state;
 
 /*Button_task==========================================*/
-#define Button_task_PRIORITY   				1  		// Task Priority
-#define Button_task_STACK_SIZE 				70		// Task Stack Size
+#define BUTTON_TASK_PRIORITY   				CONFIG_BUTTON_TASK_PRIORITY  		// Task Priority
+#define BUTTON_TASK_STACK_SIZE 				CONFIG_BUTTON_TASK_STACK_SIZE		// Task Stack Size
 TaskHandle_t ButtonTaskHandler;						// Task Handler
 
 void Button_task(void *pvParameters);
