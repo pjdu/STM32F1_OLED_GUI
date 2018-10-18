@@ -92,8 +92,8 @@ AIR_DECLARE_SET_MEMBER_FUNC_DEF(pm2_5)
 AIR_DECLARE_GET_MEMBER_FUNC_DEF(pm2_5)
 
 
-void setNumberofDevice(uint16_t num, int device_number);
-uint16_t getNumberofDevice(int device_number);
+AIR_DECLARE_SET_MEMBER_FUNC_DEF(numberofDevice)
+AIR_DECLARE_GET_MEMBER_FUNC_DEF(numberofDevice)
 
 
 #endif

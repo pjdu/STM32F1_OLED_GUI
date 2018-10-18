@@ -49,7 +49,7 @@ void main_ui_task(void *pvparameter)
 
 		}
 
-		data.numberofDevice = getNumberofDevice(0);
+		data.numberofDevice = airdata_get_numberofDevice(0);
 		if(data.numberofDevice != 0)
 		{
 			data.temperature = 0;
@@ -91,13 +91,13 @@ void main_ui_task(void *pvparameter)
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.co2;
 		snprintf(buf, 10, "CO2 :%3f", tmp / data.numberofDevice );
-		show_str(mainUIWindow.x + 65, mainUIWindow.y + 15, buf, 12, 12, 1);
+		show_str(mainUIWindow.x + 85, mainUIWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 		//VOC
 		buf = pvPortMalloc(sizeof(char) * 11);
 		tmp = data.voc / 1000.;
 		snprintf(buf, 11, "VOC :%.3f", tmp / data.numberofDevice);
-		show_str(mainUIWindow.x + 65, mainUIWindow.y + 30, buf, 12, 12, 1);
+		show_str(mainUIWindow.x + 85, mainUIWindow.y + 30, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//TIME
@@ -106,20 +106,20 @@ void main_ui_task(void *pvparameter)
 		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", calendar.w_year,calendar.w_month,
 														  calendar.w_date,calendar.hour,
 														  calendar.min,calendar.sec);
-		show_str(mainUIWindow.x + 65, mainUIWindow.y + 45, buf, 12, 12, 1);
+		show_str(mainUIWindow.x + 85, mainUIWindow.y + 45, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//PM2_5
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.pm2_5 / 10.;
 		snprintf(buf, 10, "PM25:%2.1f", tmp / data.numberofDevice);
-		show_str(mainUIWindow.x + 125, mainUIWindow.y + 15, buf, 12, 12, 1);
+		show_str(mainUIWindow.x + 165, mainUIWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//deviceNumber
 		buf = pvPortMalloc(sizeof(char) * 10);
 		snprintf(buf, 10, "dev :%d", data.numberofDevice);
-		show_str(mainUIWindow.x + 125, mainUIWindow.y + 30, buf, 12, 12, 1);
+		show_str(mainUIWindow.x + 165, mainUIWindow.y + 30, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		GUI_Refresh();

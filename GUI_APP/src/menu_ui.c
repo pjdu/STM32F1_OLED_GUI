@@ -145,7 +145,7 @@ void Menu_SetSelected(int item_index, bool selected) {
 void Menu_Task(void *pvParameters) {
 
 	uint8_t showItems;
-	int time3s_counter = 0 ;
+	int time_counter = 0 ;
 	Rotary_state rstate = state_no_changed;
 	DisplayMenuInit(CurMenu);
 	RotaryEcncorder_Init();
@@ -175,10 +175,10 @@ void Menu_Task(void *pvParameters) {
 					rstate = RotaryEcncorder_GetState();
 					switch (rstate) {
 					case state_no_changed:
-						time3s_counter ++;
-						//沒有任何按鈕事件且無旋轉持續3秒
-						if(time3s_counter >= 30){
-							// 30 * 100ms = 3s
+						time_counter ++;
+						//沒有任何按鈕事件且無旋轉持續1minute
+						if(time_counter >= 600){
+							// 600 * 100ms = 1min
 							exitMenu();
 							xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
 										(const char*     ) "main task",		      		//Task Name
@@ -192,7 +192,7 @@ void Menu_Task(void *pvParameters) {
 					case state_counter_clock_wise:
 					case state_clock_wise:
 						//清除窗口內容
-						time3s_counter = 0;
+						time_counter = 0;
 
 						GUI_RectangleFill(MenuWindow.x + 1, MenuScrollbar.y,
 								MenuScrollbar.x - 1, MenuWindow.height - 2, 0);

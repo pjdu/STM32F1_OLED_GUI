@@ -20,12 +20,14 @@ static Device_Msg data;
 void SENSOR_UI_Task(void *pvParameters)
 {
 	int rotatnum = 0;
-	int time3s_counter = 0 ;
+	int time_counter = 0 ;
+	int limit_page_display_num;
 	Rotary_state rstate = state_no_changed;
 
 	GUI_ClearSCR();
 	GUI_WindowsDraw(&SensorWindow);
-	RotaryEcncorder_SetRange(1,CONFIG_MAX_DEVICE_SIZE);
+	RotaryEcncorder_SetRange(0,CONFIG_MAX_DEVICE_SIZE);
+	RotaryEcncorder_SetCount(0);
 	while(1)
 	{
 		if (EventGroupHandler != NULL) {
@@ -55,9 +57,9 @@ void SENSOR_UI_Task(void *pvParameters)
 				case NULL_EVENT_RAISE:
 					rstate = RotaryEcncorder_GetState();
 					if(rstate == state_no_changed){
-						time3s_counter++;
-						if(time3s_counter > 10){
-						//delay 300ms * 10 ~= 3s
+						time_counter++;
+						if(time_counter > 200){
+						//delay 300ms * 200 ~= 1minute
 						xTaskCreate((TaskFunction_t  )(main_ui_task),         	  	//Task Function
 									(const char*     ) "main task",		      		//Task Name
 									(uint16_t        ) MAIN_UI_PAGE_TASK_STACK_SIZE, //Task Stack Size
@@ -71,15 +73,19 @@ void SENSOR_UI_Task(void *pvParameters)
 			}
 		}
 
+		limit_page_display_num = airdata_get_numberofDevice(0);
+		limit_page_display_num--;
+		RotaryEcncorder_SetRange(0,limit_page_display_num);
 		rotatnum = RotaryEcncorder_GetCount();
+
+		//限制旋轉值小於等於當前可顯示頁面
+		rotatnum = (rotatnum > limit_page_display_num)?limit_page_display_num:rotatnum;
 
 		//顯示Sensor 標題頁名稱
 		SensorWindow.title = pvPortMalloc(sizeof(uint8_t) * 16);
-		snprintf(SensorWindow.title, 14, "Sensor %d view", rotatnum);
+		snprintf(SensorWindow.title, 14, "Device %d view", rotatnum+1);
 		show_str_mid(SensorWindow.x, SensorWindow.y + 1, SensorWindow.title, 12,12, 0, SensorWindow.width);
 		vPortFree(SensorWindow.title);
-
-		rotatnum = rotatnum - 1; // data start index :0 ,page num start index :1
 
 		// get airdata
 		data.shortaddress = airdata_get_shortaddress(rotatnum);//getShortaddress(rotatnum);
@@ -115,14 +121,15 @@ void SENSOR_UI_Task(void *pvParameters)
 
 		//CO2
 		buf = pvPortMalloc(sizeof(char) * 10);
-		snprintf(buf, 10, "CO2 :%3d", data.co2);
-		show_str(SensorWindow.x + 65, SensorWindow.y + 15, buf, 12, 12, 1);
+		tmp = data.co2;
+		snprintf(buf, 10, "CO2 :%3f", tmp);
+		show_str(SensorWindow.x + 85, SensorWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 		//VOC
 		buf = pvPortMalloc(sizeof(char) * 11);
 		tmp = data.voc / 1000.;
 		snprintf(buf, 11, "VOC :%.3f", tmp);
-		show_str(SensorWindow.x + 65, SensorWindow.y + 30, buf, 12, 12, 1);
+		show_str(SensorWindow.x + 85, SensorWindow.y + 30, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//TIME
@@ -132,14 +139,14 @@ void SENSOR_UI_Task(void *pvParameters)
 		snprintf(buf, 25, "TIME:%4d/%2d/%2d-%2d:%2d:%2d", calendar.w_year,calendar.w_month,
 														  calendar.w_date,calendar.hour,
 														  calendar.min,calendar.sec);
-		show_str(SensorWindow.x + 65, SensorWindow.y + 45, buf, 12, 12, 1);
+		show_str(SensorWindow.x + 85, SensorWindow.y + 45, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//PM2_5
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.pm2_5 / 10.;
 		snprintf(buf, 10, "PM25:%2.1f", tmp);
-		show_str(SensorWindow.x + 125, SensorWindow.y + 15, buf, 12, 12, 1);
+		show_str(SensorWindow.x + 185, SensorWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 
 		//IAQ

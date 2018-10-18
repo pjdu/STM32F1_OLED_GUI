@@ -21,7 +21,7 @@ const uint8_t mainMenuTitle[] = "test menu";
 
 const char* mainMenuLanguage[MAIN_MENU_ITEMNUM]={
 "1.Time Setting",
-"2.Sensor 1 State",
+"2.Device State",
 "3.return to Main",
 //"4.Sensor 3 State",
 //"5.return to Main",
