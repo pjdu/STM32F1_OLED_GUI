@@ -1,6 +1,12 @@
 #ifndef _AIR_DATA_H_
 #define _AIR_DATA_H_
 #include <stdint.h>
+#include "config.h"
+
+#if SUPPORT_OS
+	#include "FreeRTOS.h"
+	#include "task.h"
+#endif
 //typedef struct{
 //	uint16_t               	shortaddress;
 //    double                  temperature;
@@ -72,6 +78,9 @@ enum{
 
 #define AIR_DECLARE_GET_MEMBER_FUNC_DEF(member) \
 		uint16_t airdata_get_##member(int device_number);
+
+void airdata_delete_dev();
+void airdata_create_dev(int NumberOfDev);
 
 AIR_DECLARE_SET_MEMBER_FUNC_DEF(shortaddress)
 AIR_DECLARE_GET_MEMBER_FUNC_DEF(shortaddress)

@@ -27,6 +27,7 @@ void decode_command_task()
 			case CMD_DEV_LIST:
 				index = 0;
 				device_number = ( adu_len - CONFIG_COMMAND_HEADER_SIZE) / 2;
+				airdata_create_dev(device_number);
 				airdata_set_numberofDevice(device_number,0);
 				break;
 			case CMD_DEV_MSG:

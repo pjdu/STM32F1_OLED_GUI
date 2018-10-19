@@ -3,11 +3,16 @@
 
 
 
-#define DEBUG  		 0		 //Debug = 1時，用於除錯模式會有錯誤訊息從uart輸出
+#define DEBUG  		 0		 //Debug = 1時，用於除錯模式會有記憶體剩餘訊息從uart輸出
 							 //Debug = 0時，	會關閉錯誤訊息輸出
 
 #define SUPPORT_OS   1 		//1有使用OS,delay_ms採用os版本的vTaskDelay
 							//0不使用os,delay_ms採用一般版本dwt_delay
+
+
+//FreeRTOS 使用之HEAP SIZE ，初始化需使用約7K，穩定運行狀態大約使用5K
+//應用若增加最大約可調至20K，此區記憶體占用可在Build Analyzer觀察RAM的編譯時期使用率
+#define CONFIG_TOTAL_HEAP_SIZE ( ( size_t ) ( 10 * 1024 ) )
 
 
 //CONFIG_FOR_COMMAND

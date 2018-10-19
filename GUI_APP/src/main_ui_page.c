@@ -66,18 +66,30 @@ void main_ui_task(void *pvparameter)
 				data.voc += airdata_get_voc(i);
 				data.pm2_5 += airdata_get_pm2_5(i);
 			}
+			data.temperature = (data.temperature==0)? data.temperature : data.temperature / data.numberofDevice;
+			data.humidity = (data.humidity==0) ? data.humidity : data.humidity / data.numberofDevice;
+			data.co2 = (data.co2==0) ? data.co2 : data.co2 / data.numberofDevice;
+			data.voc = (data.voc==0) ? data.voc : data.voc / data.numberofDevice;
+			data.pm2_5 = (data.pm2_5==0) ? data.pm2_5 : data.pm2_5 / data.numberofDevice;
+		}else
+		{
+			data.temperature = 0;
+			data.humidity = 0;
+			data.co2 = 0;
+			data.voc = 0;
+			data.pm2_5 = 0;
 		}
 
 		//Temperature
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.temperature / 10.;
-		snprintf(buf, 10, "Temp:%2.1f", tmp / data.numberofDevice);
+		snprintf(buf, 10, "Temp:%2.1f", tmp);
 		show_str(mainUIWindow.x + 5, mainUIWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 		//Humidity
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.humidity / 10.;
-		snprintf(buf, 10, "Humi:%2.1f", tmp / data.numberofDevice);
+		snprintf(buf, 10, "Humi:%2.1f", tmp);
 		show_str(mainUIWindow.x + 5, mainUIWindow.y + 30, buf, 12, 12, 1);
 		vPortFree(buf);
 
@@ -90,13 +102,13 @@ void main_ui_task(void *pvparameter)
 		//CO2
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.co2;
-		snprintf(buf, 10, "CO2 :%3f", tmp / data.numberofDevice );
+		snprintf(buf, 10, "CO2 :%3f", tmp);
 		show_str(mainUIWindow.x + 85, mainUIWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 		//VOC
 		buf = pvPortMalloc(sizeof(char) * 11);
 		tmp = data.voc / 1000.;
-		snprintf(buf, 11, "VOC :%.3f", tmp / data.numberofDevice);
+		snprintf(buf, 11, "VOC :%.3f", tmp);
 		show_str(mainUIWindow.x + 85, mainUIWindow.y + 30, buf, 12, 12, 1);
 		vPortFree(buf);
 
@@ -112,7 +124,7 @@ void main_ui_task(void *pvparameter)
 		//PM2_5
 		buf = pvPortMalloc(sizeof(char) * 10);
 		tmp = data.pm2_5 / 10.;
-		snprintf(buf, 10, "PM25:%2.1f", tmp / data.numberofDevice);
+		snprintf(buf, 10, "PM25:%2.1f", tmp);
 		show_str(mainUIWindow.x + 165, mainUIWindow.y + 15, buf, 12, 12, 1);
 		vPortFree(buf);
 
