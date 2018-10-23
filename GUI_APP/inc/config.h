@@ -12,14 +12,30 @@
 
 //FreeRTOS 使用之HEAP SIZE ，初始化需使用約7K，穩定運行狀態大約使用5K
 //應用若增加最大約可調至20K，此區記憶體占用可在Build Analyzer觀察RAM的編譯時期使用率
-#define CONFIG_TOTAL_HEAP_SIZE ( ( size_t ) ( 10 * 1024 ) )
+#define CONFIG_TOTAL_HEAP_SIZE ( ( size_t ) ( 10 * 1024 ) + (CONFIG_MAX_COMMAND_SIZE * CONFIG_SEQ_COMMAND_BUFFER_SIZE) )
 
 
 //CONFIG_FOR_COMMAND
-#define CONFIG_COMMAND_HEADER_SIZE 	      4
-#define CONFIG_MAX_COMMAND_SIZE 		  16
-#define CONFIG_MSG_DATA_SIZE    	     (CONFIG_MAX_COMMAND_SIZE - CONFIG_COMMAND_HEADER_SIZE)
-#define CONFIG_SEQ_COMMAND_BUFFER_SIZE    16
+#define CONFIG_COMMAND_HEADER_SIZE 	      4 	// HEADER + LENGTH + FC + CS = 4Byte
+
+
+//增加下面兩個的大小，會連動增加下面兩個TASK大小
+/*
+ *#define CONFIG_TOTAL_HEAP_SIZE
+ *#define CONFIG_UART_TASK_STACK_SIZE 				128		// Task Stack Size
+ *#define CONFIG_DECODE_TASK_STACK_SIZE 			128		// Task Stack Size
+ *
+ *最大device個數  = ( CONFIG_MAX_COMMAND_SIZE - CONFIG_COMMAND_HEADER_SIZE ) / 2
+ *			    =   (256 - 4) / 2 = 126
+*/
+#define CONFIG_MAX_COMMAND_SIZE 		  256   // 每一條COMMAND 最大大小
+#define CONFIG_SEQ_COMMAND_BUFFER_SIZE    16   // 最大儲存COMMAND的個數
+
+
+
+#define CONFIG_MSG_DATA_SIZE    	     12
+#define CONFIG_TIME_DATA_SIZE			  7
+
 #define CONFIG_MAX_DEVICE_SIZE  		 (CONFIG_MAX_COMMAND_SIZE - CONFIG_COMMAND_HEADER_SIZE) >> 1
 
 
@@ -37,10 +53,13 @@
 //CONFIG FOR APP TASK PRIORITY
 #define CONFIG_START_TASK_PRIORITY   				1  		// Task Priority
 #define CONFIG_BUTTON_TASK_PRIORITY   				1  		// Task Priority
+
 #define CONFIG_MAIN_UI_PAGE_TASK_PRIORITY   		2  		// Task Priority
 #define CONFIG_MENU_TASK_PRIORITY   				2  		// Task Priority
+
 #define CONFIG_RTCUI_TASK_PRIORITY   				3  		// Task Priority
 #define CONFIG_SENSOR_UI_TASK_PRIORITY   			3  		// Task Priority
+
 #define CONFIG_UART_TASK_PRIORITY   				4  	 	// Task Priority
 #define CONFIG_DECODE_TASK_PRIORITY   				5		// Task Priority
 #define CONFIG_GPIO_TASK_PRIORITY   				6  		// Task Priority
@@ -59,8 +78,10 @@
 #define CONFIG_MENU_TASK_STACK_SIZE 				128		// Task Stack Size
 #define CONFIG_RTCUI_TASK_STACK_SIZE 				256		// Task Stack Size
 #define CONFIG_SENSOR_UI_TASK_STACK_SIZE 			256		// Task Stack Size
-#define CONFIG_UART_TASK_STACK_SIZE 				128		// Task Stack Size
-#define CONFIG_DECODE_TASK_STACK_SIZE 				128		// Task Stack Size
+
+#define CONFIG_UART_TASK_STACK_SIZE 				(128 + (CONFIG_MAX_COMMAND_SIZE * CONFIG_SEQ_COMMAND_BUFFER_SIZE) / 4)	// Task Stack Size
+#define CONFIG_DECODE_TASK_STACK_SIZE 				(128 + (CONFIG_MAX_COMMAND_SIZE * CONFIG_SEQ_COMMAND_BUFFER_SIZE) / 4)	// Task Stack Size
+
 #define CONFIG_GPIO_TASK_STACK_SIZE 				100		// Task Stack Size
 #define CONFIG_IWDG_TASK_STACK_SIZE 				70		// Task Stack Size
 

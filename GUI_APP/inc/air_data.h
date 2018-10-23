@@ -59,6 +59,22 @@ typedef struct {
 //	uint16_t IAQMode;
 } Device_Msg;
 
+typedef struct {
+	union {
+		uint8_t all_data[7];
+		struct{
+			union{
+				uint8_t YEAR[2];
+				uint16_t year;
+			};
+			uint8_t mounth;
+			uint8_t date;
+			uint8_t hour;
+			uint8_t minute;
+			uint8_t second;
+		};
+	};
+}Time_Msg;
 
 enum {
     CMD_STARCODE = 0,
@@ -70,6 +86,7 @@ enum {
 enum{
 	CMD_DEV_LIST = 0x02,
 	CMD_DEV_MSG	 = 0x03,
+	CMD_DEV_TIME = 0x04
 };
 
 

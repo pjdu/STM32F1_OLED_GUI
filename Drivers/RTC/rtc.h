@@ -16,7 +16,9 @@ typedef struct
 }_calendar_obj;
 
 extern _calendar_obj calendar;
-
+void MY_RTC_Init(void);
+HAL_StatusTypeDef RTC_Set(uint16_t syear,uint8_t smon,uint8_t sday,uint8_t hour,uint8_t min,uint8_t sec);
+void RTC_Get(void);
 
 void MY_RTC_Init(void);
 HAL_StatusTypeDef RTC_Set(uint16_t syear,uint8_t smon,uint8_t sday,uint8_t hour,uint8_t min,uint8_t sec);

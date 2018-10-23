@@ -1,5 +1,5 @@
 #include "decode_command.h"
-
+#include "rtc.h"
 
 //static uint8_t cmd_temp[HEADER_SIZE + MAX_DEVICE_SIZE *2]; //
 //static uint8_t msg_temp[MAX_MSG_SIZE]; //
@@ -11,6 +11,7 @@ void decode_command_task()
 {
 	int device_number;
 	Device_Msg  msg_temp;
+	Time_Msg msg_time;
 	uint8_t *read_temp_ptr;
 	uint8_t adu_len;
 	int index = 0;
@@ -43,6 +44,11 @@ void decode_command_task()
 				index++;
 				if(index > device_number-1)index = 0;
 
+				break;
+			case CMD_DEV_TIME:
+				memcpy(msg_time.all_data, read_temp_ptr + CMD_START_DATA,CONFIG_TIME_DATA_SIZE);
+				RTC_Set(msg_time.year,msg_time.mounth,msg_time.date, \
+						msg_time.hour,msg_time.minute,msg_time.second);
 				break;
 			default:
 				break;
