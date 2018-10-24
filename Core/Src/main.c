@@ -87,6 +87,12 @@ void START_task(void *pvParameters);				// Task Fuction
 TaskHandle_t GPIOTaskHandler;						// Task Handler
 void GPIO_task(void *pvParameters);					// Task Fuction
 
+/*TASK_LIST_TASK==========================================*/
+#define LIST_TASK_PRIORITY   				CONFIG_LIST_TASK_PRIORITY  		// Task Priority
+#define LIST_TASK_STACK_SIZE				CONFIG_LIST_TASK_STACK_SIZE		// Task Stack Size
+TaskHandle_t LISTTaskHandler;						// Task Handler
+void LIST_task(void *pvParameters);					// Task Fuction
+
 
 /*Event Group ==========================================*/
 EventGroupHandle_t EventGroupHandler;
@@ -501,16 +507,6 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) GPIO_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t*    ) &GPIOTaskHandler);	    //Task Handler
 
-	//rand data genreate task
-//	xTaskCreate((TaskFunction_t  )(rand_task),         	  	//Task Function
-//				(const char*     ) "rand_task",		      	//Task Name
-//				(uint16_t        ) RAND_TASK_STACK_SIZE, 	//Task Stack Size
-//				(void *          ) NULL,				    //Task Fuction Parameter
-//				(UBaseType_t     ) RAND_TASK_PRIORITY, 		//Task Priority
-//				(TaskHandle_t    ) &randTaskHandler);	    //Task Handler
-
-
-
 	//independent watch dog task
 	xTaskCreate((TaskFunction_t  )(iwdg_Task),         	  	//Task Function
 				(const char*     ) "iwdg_Task",		      	//Task Name
@@ -519,13 +515,22 @@ void START_task(void *pvParameters){
 				(UBaseType_t     ) IWDG_TASK_PRIORITY, 		//Task Priority
 				(TaskHandle_t    ) &iwdgTaskHandler);	    //Task Handler
 
+#if DEBUG
+	//堆疊統計任務
+	xTaskCreate((TaskFunction_t  )(LIST_task),         	  	//Task Function
+				(const char*     ) "LIST_task",		      	//Task Name
+				(uint16_t        ) LIST_TASK_STACK_SIZE, 	//Task Stack Size
+				(void *          ) NULL,				    //Task Fuction Parameter
+				(UBaseType_t     ) LIST_TASK_PRIORITY, 		//Task Priority
+				(TaskHandle_t    ) &LISTTaskHandler);	    //Task Handler
+#endif
 	vTaskDelete(StartTaskHandler);
 	taskEXIT_CRITICAL();
 }
 void GPIO_task(void *pvParameters){
 	while(1){
 #if DEBUG
-		printf("Free Heap size = %d\r\n",xPortGetFreeHeapSize());
+
 #endif
 		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 		vTaskDelay(1000/portTICK_PERIOD_MS);
@@ -537,17 +542,17 @@ void GPIO_task(void *pvParameters){
 }
 
 
-//void Test_task(void *pvParameters){
-//	int32_t count=0;
-//	int32_t count1=0;
-//	RotaryEcncorder_SetRange(0,10);
-//	while(1){
-//		count1 = RotaryEcncorder_GetCount();
-//		OLED_ShowNum(30,30,count1,4,6,12);
-//		OLED_RefreshGram();
-//		vTaskDelay(30/portTICK_PERIOD_MS);
-//	}
-//}
+void LIST_task(void *pvParameters)
+{
+	char info[800];
+	while(1)
+	{
+		vTaskList(info);
+		printf("%s\r\n",info);
+		printf("Free Heap size = %d\r\n",xPortGetFreeHeapSize());
+		vTaskDelay(10000);
+	}
+}
 
 void vApplicationMallocFailedHook( void ) {
 #if DEBUG

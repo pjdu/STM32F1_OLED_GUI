@@ -50,16 +50,17 @@
 
 extern uint32_t SystemCoreClock;
 
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
 #define configUSE_PREEMPTION			   		 1
 #define configUSE_IDLE_HOOK				   		 0
 #define configUSE_TICK_HOOK				  		 0
 #define configCPU_CLOCK_HZ				   		 ( SystemCoreClock )
 #define configTICK_RATE_HZ				   		 ( ( TickType_t ) 1000 )
-#define configMAX_PRIORITIES			   		 ( 20 )
-#define configMINIMAL_STACK_SIZE		   		 ( ( unsigned short ) 100 )
+#define configMAX_PRIORITIES			   		 ( 32 )
+#define configMINIMAL_STACK_SIZE		   		 ( ( unsigned short ) 70 )
 #define configTOTAL_HEAP_SIZE			   		 CONFIG_TOTAL_HEAP_SIZE //可供動態記憶體分配的heap size 7K
-#define configMAX_TASK_NAME_LEN			   		 ( 10 )
-#define configUSE_TRACE_FACILITY		   		 0
+#define configMAX_TASK_NAME_LEN			   		 ( 20 )
+
 #define configUSE_16_BIT_TICKS			   		 0
 #define configIDLE_SHOULD_YIELD			   		 1
 #define configUSE_MUTEXES				   		 1
@@ -72,7 +73,12 @@ extern uint32_t SystemCoreClock;
 #define configUSE_RECURSIVE_MUTEXES		   		 0
 #define configUSE_APPLICATION_TASK_TAG	         0
 #define configUSE_COUNTING_SEMAPHORES	         0
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
+
+
+
+// 堆棧統計任務
+#define configUSE_TRACE_FACILITY 1
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
 
 
 /* Co-routine definitions. */
